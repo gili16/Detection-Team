@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package alerts;
+
+service AlertService {
+    rpc CountAllertOn(CountAlertRequest) returns (CountAlertResponse);
+    rpc CountAllertOff(CountAlertRequest) returns (CountAlertResponse);
+    rpc SendImageAlertOn(SendImageAlertRequest) returns (SendImageAlertResponse);
+    rpc SendImageAlertOff(SendImageAlertRequest) returns (SendImageAlertResponse);
+    rpc AccidentAlertOn(AccidentAlertRequest) returns (AccidentAlertResponse);
+    rpc AccidentAlertOff(AccidentAlertRequest) returns (AccidentAlertResponse);
+    rpc OddEventAlertOn(OddEventAlertRequest) returns (OddEventAlertResponse);
+    rpc OddEventAlertOff(OddEventAlertRequest) returns (OddEventAlertResponse);
+    rpc IsEmptyAlertOn(IsEmptyAlertRequest) returns (IsEmptyAlertResponse);
+    rpc IsEmptyAlertOff(IsEmptyAlertRequest) returns (IsEmptyAlertResponse);
+}
+
+message CountAlertRequest {
+    bool is_on = 1;
+    int32 count = 2;
+    int32 coordinate1_x = 3;
+    int32 coordinate1_y = 4;
+    int32 coordinate2_x = 5;
+    int32 coordinate2_y = 6;
+    bytes image = 7;
+}
+
+message CountAlertResponse {
+    string message = 1;
+}
+
+message SendImageAlertRequest {
+    bool is_on = 1;
+}
+
+message SendImageAlertResponse {
+    string message = 1;
+}
+
+message AccidentAlertRequest {
+    bool is_on = 1;
+}
+
+message AccidentAlertResponse {
+    string message = 1;
+}
+
+message OddEventAlertRequest {
+    bool is_on = 1;
+}
+
+message OddEventAlertResponse {
+    string message = 1;
+}
+
+message IsEmptyAlertRequest {
+    bool is_on = 1;
+}
+
+message IsEmptyAlertResponse {
+    string message = 1;
+}
