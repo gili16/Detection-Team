@@ -11,7 +11,7 @@ def run():
         stub = allert_server_pb2_grpc.AlertServiceStub(channel)
 
         # Read image from file
-        # with open('img000001.jpg', 'rb') as f:  # Specify the correct path
+        # with open('img000002.jpg', 'rb') as f:  # Specify the correct path
         #     image_data = f.read()
 
         # # Example: Count Alert On
@@ -28,10 +28,10 @@ def run():
 
 
         # Example: Count Alert Off
-        response = stub.CountAllertOff(allert_server_pb2.CountAlertRequest(
-            is_on=False
-        ))
-        print("CountAlertOff:", response.message)
+        # response = stub.CountAllertOff(allert_server_pb2.CountAlertRequest(
+        #     is_on=False
+        # ))
+        # print("CountAlertOff:", response.message)
 
         # Example: Send Image Alert On
         # response = stub.SendImageAlertOn(allert_server_pb2.SendImageAlertRequest(
@@ -40,45 +40,66 @@ def run():
         # print("SendImageAlertOn:", response.message)
 
         # # Example: Send Image Alert Off
-        response = stub.SendImageAlertOff(allert_server_pb2.SendImageAlertRequest(
-            is_on=False
-        ))
-        print("SendImageAlertOff:", response.message)
+        # response = stub.SendImageAlertOff(allert_server_pb2.SendImageAlertRequest(
+        #     is_on=False
+        # ))
+        # print("SendImageAlertOff:", response.message)
 
-        # # Example: Accident Alert On
+        # Example: Accident Alert On
         # response = stub.AccidentAlertOn(allert_server_pb2.AccidentAlertRequest(
         #     is_on=True
         # ))
         # print("AccidentAlertOn:", response.message)
 
         # # Example: Accident Alert Off
-        response = stub.AccidentAlertOff(allert_server_pb2.AccidentAlertRequest(
-            is_on=False
-        ))
-        print("AccidentAlertOff:", response.message)
+        # response = stub.AccidentAlertOff(allert_server_pb2.AccidentAlertRequest(
+        #     is_on=False
+        # ))
+        # print("AccidentAlertOff:", response.message)
 
-        # # Example: Odd Event Alert On
+        # Example: Odd Event Alert On
         # response = stub.OddEventAlertOn(allert_server_pb2.OddEventAlertRequest(
         #     is_on=True
         # ))
         # print("OddEventAlertOn:", response.message)
 
         # # Example: Odd Event Alert Off
-        response = stub.OddEventAlertOff(allert_server_pb2.OddEventAlertRequest(
-            is_on=False
-        ))
-        print("OddEventAlertOff:", response.message)
+        # response = stub.OddEventAlertOff(allert_server_pb2.OddEventAlertRequest(
+        #     is_on=False
+        # ))
+        # print("OddEventAlertOff:", response.message)
 
-        # # Example: Is Empty Alert On
+        # Example: Is Empty Alert On
         # response = stub.IsEmptyAlertOn(allert_server_pb2.IsEmptyAlertRequest(
         #     is_on=True
         # ))
         # print("IsEmptyAlertOn:", response.message)
 
         # # Example: Is Empty Alert Off
-        response = stub.IsEmptyAlertOff(allert_server_pb2.IsEmptyAlertRequest(
-            is_on=False
+        # response = stub.IsEmptyAlertOff(allert_server_pb2.IsEmptyAlertRequest(
+        #     is_on=False
+        # ))
+        # print("IsEmptyAlertOff:", response.message)
+        response = stub.GetAccidentResult(allert_server_pb2.GetAccidentResultRequest(
+            
         ))
-        print("IsEmptyAlertOff:", response.message)
+        print("accident result:", response.accident)
+
+        response = stub.GetCountResult(allert_server_pb2.GetCountResultRequest(
+            
+        ))
+        print("count result:", response.count)
+        response = stub.GetOddEventResult(allert_server_pb2.GetOddEventResultRequest(
+            
+        ))
+        print("odd event result:", response.odd_event)
+        response = stub.GetIsEmptyResult(allert_server_pb2.GetIsEmptyResultRequest(
+            
+        ))
+        print("is empty result:", response.is_empty)
+        response = stub.GetSendImageResult(allert_server_pb2.GetSendImageResultRequest(
+            
+        ))
+        print("image result:", response.image)
 if __name__ == '__main__':
     run()

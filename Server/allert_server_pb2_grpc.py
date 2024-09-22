@@ -2,8 +2,13 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 import warnings
+import sys
+import os
 
-import allert_server_pb2 as allert__server__pb2
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from Server import allert_server_pb2 as allert__server__pb2
+# import allert_server_pb2 as allert__server__pb2
 
 GRPC_GENERATED_VERSION = '1.66.1'
 GRPC_VERSION = grpc.__version__
@@ -84,6 +89,56 @@ class AlertServiceStub(object):
                 request_serializer=allert__server__pb2.IsEmptyAlertRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.IsEmptyAlertResponse.FromString,
                 _registered_method=True)
+        self.SetCountResult = channel.unary_unary(
+                '/alerts.AlertService/SetCountResult',
+                request_serializer=allert__server__pb2.SetCountResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetCountResultResponse.FromString,
+                _registered_method=True)
+        self.SetAccidentResult = channel.unary_unary(
+                '/alerts.AlertService/SetAccidentResult',
+                request_serializer=allert__server__pb2.SetAccidentResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetAccidentResultResponse.FromString,
+                _registered_method=True)
+        self.SetSendImageResult = channel.unary_unary(
+                '/alerts.AlertService/SetSendImageResult',
+                request_serializer=allert__server__pb2.SetSendImageResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetSendImageResultResponse.FromString,
+                _registered_method=True)
+        self.SetOddEventResult = channel.unary_unary(
+                '/alerts.AlertService/SetOddEventResult',
+                request_serializer=allert__server__pb2.SetOddEventResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetOddEventResultResponse.FromString,
+                _registered_method=True)
+        self.SetIsEmptyResult = channel.unary_unary(
+                '/alerts.AlertService/SetIsEmptyResult',
+                request_serializer=allert__server__pb2.SetIsEmptyResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetIsEmptyResultResponse.FromString,
+                _registered_method=True)
+        self.GetCountResult = channel.unary_unary(
+                '/alerts.AlertService/GetCountResult',
+                request_serializer=allert__server__pb2.GetCountResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetCountResultResponse.FromString,
+                _registered_method=True)
+        self.GetAccidentResult = channel.unary_unary(
+                '/alerts.AlertService/GetAccidentResult',
+                request_serializer=allert__server__pb2.GetAccidentResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetAccidentResultResponse.FromString,
+                _registered_method=True)
+        self.GetSendImageResult = channel.unary_unary(
+                '/alerts.AlertService/GetSendImageResult',
+                request_serializer=allert__server__pb2.GetSendImageResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetSendImageResultResponse.FromString,
+                _registered_method=True)
+        self.GetOddEventResult = channel.unary_unary(
+                '/alerts.AlertService/GetOddEventResult',
+                request_serializer=allert__server__pb2.GetOddEventResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetOddEventResultResponse.FromString,
+                _registered_method=True)
+        self.GetIsEmptyResult = channel.unary_unary(
+                '/alerts.AlertService/GetIsEmptyResult',
+                request_serializer=allert__server__pb2.GetIsEmptyResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetIsEmptyResultResponse.FromString,
+                _registered_method=True)
 
 
 class AlertServiceServicer(object):
@@ -149,6 +204,66 @@ class AlertServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SetCountResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SetAccidentResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SetSendImageResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SetOddEventResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SetIsEmptyResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetCountResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetAccidentResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetSendImageResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetOddEventResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetIsEmptyResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AlertServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -201,6 +316,56 @@ def add_AlertServiceServicer_to_server(servicer, server):
                     servicer.IsEmptyAlertOff,
                     request_deserializer=allert__server__pb2.IsEmptyAlertRequest.FromString,
                     response_serializer=allert__server__pb2.IsEmptyAlertResponse.SerializeToString,
+            ),
+            'SetCountResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetCountResult,
+                    request_deserializer=allert__server__pb2.SetCountResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetCountResultResponse.SerializeToString,
+            ),
+            'SetAccidentResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetAccidentResult,
+                    request_deserializer=allert__server__pb2.SetAccidentResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetAccidentResultResponse.SerializeToString,
+            ),
+            'SetSendImageResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetSendImageResult,
+                    request_deserializer=allert__server__pb2.SetSendImageResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetSendImageResultResponse.SerializeToString,
+            ),
+            'SetOddEventResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetOddEventResult,
+                    request_deserializer=allert__server__pb2.SetOddEventResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetOddEventResultResponse.SerializeToString,
+            ),
+            'SetIsEmptyResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetIsEmptyResult,
+                    request_deserializer=allert__server__pb2.SetIsEmptyResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetIsEmptyResultResponse.SerializeToString,
+            ),
+            'GetCountResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetCountResult,
+                    request_deserializer=allert__server__pb2.GetCountResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetCountResultResponse.SerializeToString,
+            ),
+            'GetAccidentResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAccidentResult,
+                    request_deserializer=allert__server__pb2.GetAccidentResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetAccidentResultResponse.SerializeToString,
+            ),
+            'GetSendImageResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSendImageResult,
+                    request_deserializer=allert__server__pb2.GetSendImageResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetSendImageResultResponse.SerializeToString,
+            ),
+            'GetOddEventResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOddEventResult,
+                    request_deserializer=allert__server__pb2.GetOddEventResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetOddEventResultResponse.SerializeToString,
+            ),
+            'GetIsEmptyResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetIsEmptyResult,
+                    request_deserializer=allert__server__pb2.GetIsEmptyResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetIsEmptyResultResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -473,6 +638,276 @@ class AlertService(object):
             '/alerts.AlertService/IsEmptyAlertOff',
             allert__server__pb2.IsEmptyAlertRequest.SerializeToString,
             allert__server__pb2.IsEmptyAlertResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetCountResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetCountResult',
+            allert__server__pb2.SetCountResultRequest.SerializeToString,
+            allert__server__pb2.SetCountResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetAccidentResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetAccidentResult',
+            allert__server__pb2.SetAccidentResultRequest.SerializeToString,
+            allert__server__pb2.SetAccidentResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetSendImageResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetSendImageResult',
+            allert__server__pb2.SetSendImageResultRequest.SerializeToString,
+            allert__server__pb2.SetSendImageResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetOddEventResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetOddEventResult',
+            allert__server__pb2.SetOddEventResultRequest.SerializeToString,
+            allert__server__pb2.SetOddEventResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetIsEmptyResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetIsEmptyResult',
+            allert__server__pb2.SetIsEmptyResultRequest.SerializeToString,
+            allert__server__pb2.SetIsEmptyResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetCountResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetCountResult',
+            allert__server__pb2.GetCountResultRequest.SerializeToString,
+            allert__server__pb2.GetCountResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetAccidentResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetAccidentResult',
+            allert__server__pb2.GetAccidentResultRequest.SerializeToString,
+            allert__server__pb2.GetAccidentResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetSendImageResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetSendImageResult',
+            allert__server__pb2.GetSendImageResultRequest.SerializeToString,
+            allert__server__pb2.GetSendImageResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetOddEventResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetOddEventResult',
+            allert__server__pb2.GetOddEventResultRequest.SerializeToString,
+            allert__server__pb2.GetOddEventResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetIsEmptyResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetIsEmptyResult',
+            allert__server__pb2.GetIsEmptyResultRequest.SerializeToString,
+            allert__server__pb2.GetIsEmptyResultResponse.FromString,
             options,
             channel_credentials,
             insecure,

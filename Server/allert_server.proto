@@ -13,6 +13,16 @@ service AlertService {
     rpc OddEventAlertOff(OddEventAlertRequest) returns (OddEventAlertResponse);
     rpc IsEmptyAlertOn(IsEmptyAlertRequest) returns (IsEmptyAlertResponse);
     rpc IsEmptyAlertOff(IsEmptyAlertRequest) returns (IsEmptyAlertResponse);
+    rpc SetCountResult(SetCountResultRequest) returns (SetCountResultResponse);
+    rpc SetAccidentResult(SetAccidentResultRequest) returns (SetAccidentResultResponse);
+    rpc SetSendImageResult(SetSendImageResultRequest) returns (SetSendImageResultResponse);
+    rpc SetOddEventResult(SetOddEventResultRequest) returns (SetOddEventResultResponse);
+    rpc SetIsEmptyResult(SetIsEmptyResultRequest) returns (SetIsEmptyResultResponse);
+    rpc GetCountResult(GetCountResultRequest) returns (GetCountResultResponse);
+    rpc GetAccidentResult(GetAccidentResultRequest) returns (GetAccidentResultResponse);
+    rpc GetSendImageResult(GetSendImageResultRequest) returns (GetSendImageResultResponse);
+    rpc GetOddEventResult(GetOddEventResultRequest) returns (GetOddEventResultResponse);
+    rpc GetIsEmptyResult(GetIsEmptyResultRequest) returns (GetIsEmptyResultResponse);
 }
 
 message CountAlertRequest {
@@ -59,4 +69,60 @@ message IsEmptyAlertRequest {
 
 message IsEmptyAlertResponse {
     string message = 1;
+}
+message SetCountResultRequest{
+    int32 count=1;
+}
+message SetAccidentResultRequest{
+    bool accident=1;
+}
+message SetSendImageResultRequest{
+    bytes image=1;
+}
+message SetOddEventResultRequest{
+    bool odd_event=1;
+}
+message SetIsEmptyResultRequest{
+    bool is_empty=1;
+}
+message SetCountResultResponse{
+    string message=1;
+}
+message SetAccidentResultResponse{
+    string message=1;
+}
+message SetSendImageResultResponse{
+    string message=1;
+}
+message SetOddEventResultResponse{
+    string message=1;
+}
+message SetIsEmptyResultResponse{
+    string message=1;
+}
+message GetCountResultRequest{
+    
+}
+message GetAccidentResultRequest{
+}
+message GetSendImageResultRequest{
+}
+message GetOddEventResultRequest{
+}
+message GetIsEmptyResultRequest{
+}
+message GetCountResultResponse{
+    int32 count=1;
+}
+message GetAccidentResultResponse{
+    bool accident=1;
+}
+message GetSendImageResultResponse{
+    bytes image=1;
+}
+message GetOddEventResultResponse{
+    bool odd_event=1;
+}
+message GetIsEmptyResultResponse{
+    bool is_empty=1;
 }
