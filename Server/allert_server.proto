@@ -8,7 +8,9 @@ service AlertService {
     rpc SendImageAlertOn(SendImageAlertRequest) returns (SendImageAlertResponse);
     rpc SendImageAlertOff(SendImageAlertRequest) returns (SendImageAlertResponse);
     rpc AccidentAlertOn(AccidentAlertRequest) returns (AccidentAlertResponse);
+    rpc IsCrossAlertOn(IsCrossAlertRequest) returns (IsCrossAlertResponse);
     rpc AccidentAlertOff(AccidentAlertRequest) returns (AccidentAlertResponse);
+    rpc IsCrossAlertOff(IsCrossAlertRequest) returns (IsCrossAlertResponse);
     rpc OddEventAlertOn(OddEventAlertRequest) returns (OddEventAlertResponse);
     rpc OddEventAlertOff(OddEventAlertRequest) returns (OddEventAlertResponse);
     rpc IsEmptyAlertOn(IsEmptyAlertRequest) returns (IsEmptyAlertResponse);
@@ -18,11 +20,14 @@ service AlertService {
     rpc SetSendImageResult(SetSendImageResultRequest) returns (SetSendImageResultResponse);
     rpc SetOddEventResult(SetOddEventResultRequest) returns (SetOddEventResultResponse);
     rpc SetIsEmptyResult(SetIsEmptyResultRequest) returns (SetIsEmptyResultResponse);
+    rpc SetIsCrossResult(SetIsCrossResultRequest) returns (SetIsCrossResultResponse);
     rpc GetCountResult(GetCountResultRequest) returns (GetCountResultResponse);
     rpc GetAccidentResult(GetAccidentResultRequest) returns (GetAccidentResultResponse);
     rpc GetSendImageResult(GetSendImageResultRequest) returns (GetSendImageResultResponse);
     rpc GetOddEventResult(GetOddEventResultRequest) returns (GetOddEventResultResponse);
     rpc GetIsEmptyResult(GetIsEmptyResultRequest) returns (GetIsEmptyResultResponse);
+    rpc GetIsCrossResult(GetIsCrossResultRequest) returns (GetIsCrossResultResponse);
+    rpc GetOnResults(GetOnResultsRequest) returns (GetOnResultsResponse);
 }
 
 message CountAlertRequest {
@@ -32,7 +37,7 @@ message CountAlertRequest {
     int32 coordinate1_y = 4;
     int32 coordinate2_x = 5;
     int32 coordinate2_y = 6;
-    bytes image = 7;
+    
 }
 
 message CountAlertResponse {
@@ -66,7 +71,16 @@ message OddEventAlertResponse {
 message IsEmptyAlertRequest {
     bool is_on = 1;
 }
-
+message IsCrossAlertRequest {
+    int32 coordinate1_x = 3;
+    int32 coordinate1_y = 4;
+    int32 coordinate2_x = 5;
+    int32 coordinate2_y = 6;
+    bytes image = 7;
+}
+message IsCrossAlertResponse {
+    string message = 1;
+}
 message IsEmptyAlertResponse {
     string message = 1;
 }
@@ -84,6 +98,12 @@ message SetOddEventResultRequest{
 }
 message SetIsEmptyResultRequest{
     bool is_empty=1;
+}
+message SetIsCrossResultRequest{
+    bool is_cross=1;
+}
+message SetIsCrossResultResponse{
+    string message=1;
 }
 message SetCountResultResponse{
     string message=1;
@@ -111,6 +131,11 @@ message GetOddEventResultRequest{
 }
 message GetIsEmptyResultRequest{
 }
+message GetIsCrossResultRequest{
+}
+message GetIsCrossResultResponse{
+    bool is_cross=1;
+}
 message GetCountResultResponse{
     int32 count=1;
 }
@@ -125,4 +150,10 @@ message GetOddEventResultResponse{
 }
 message GetIsEmptyResultResponse{
     bool is_empty=1;
+}
+message GetOnResultsRequest{
+
+}
+message GetOnResultsResponse{
+    repeated string results=1;
 }

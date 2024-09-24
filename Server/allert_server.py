@@ -16,12 +16,13 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
         self.collection_accident_alert = db['AccidentAllert']
         self.collection_odd_event_alert = db['OddEventAllert']
         self.collection_is_empty_alert = db['IsEmptyAllert']
+        self.collection_is_cross_alert = db['IsCrossAllert']
         self.collection_results=db['Results']
     def CountAllertOn(self, request, context):
-        image_data = request.image  # This will be bytes
-        print(self.collection_count_alert.find_one({'IsOn':True}))
+        # image_data = request.image  # This will be bytes
+        # print(self.collection_count_alert.find_one({'IsOn':True}))
         obj=self.collection_count_alert.find_one({'IsOn':True})
-        if not obj or obj and obj['image']!=image_data:
+        if not obj :
             # Store image data directly in MongoDB
             self.collection_count_alert.update_one(
                 {},
@@ -30,7 +31,7 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
                         'IsOn': True,
                         'coordinate1': (request.coordinate1_x, request.coordinate1_y),
                         'coordinate2': (request.coordinate2_x, request.coordinate2_y),
-                        'image': image_data
+                        
                     },                
                     '$inc': {
                         'Count': 1  # Increment Count by 1
@@ -130,6 +131,35 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
             {'$set': {'IsOn': False}}
         )
         return allert_server_pb2.IsEmptyAlertResponse(message="Is Empty Alert is OFF")
+    def IsCrossAlertOn(self, request, context):
+        image_data = request.image  # This will be bytes
+        # print(self.collection_is_cross_alert.find_one({'IsOn':True}))
+        obj=self.collection_is_cross_alert.find_one({'IsOn':True})
+        if not obj or obj and obj['image']!=image_data:
+            # Store image data directly in MongoDB
+            self.collection_is_cross_alert.update_one(
+                {},
+                {
+                    '$set': {
+                        'IsOn': True,
+                        'coordinate1': (request.coordinate1_x, request.coordinate1_y),
+                        'coordinate2': (request.coordinate2_x, request.coordinate2_y),
+                        'image': image_data
+                    },                
+                    '$inc': {
+                        'Count': 1  # Increment Count by 1
+                    }
+                },
+                upsert=True
+            )
+        return allert_server_pb2.IsCrossAlertResponse(message="IsCross Alert is ON")
+
+    def IsCrossAlertOff(self, request, context):
+        self.collection_is_cross_alert.update_one(
+            {},  # No filter
+            {'$set': {'IsOn': False}}
+        )
+        return allert_server_pb2.IsEmptyAlertResponse(message="Is Cross Alert is OFF")
     def SetCountResult(self, request, context):
         self.collection_results.update_one(
             {},
@@ -175,6 +205,18 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
             upsert=True
         )
         return allert_server_pb2.SetSendImageResultResponse(message="Image set")
+    def SetIsCrossResult(self, request, context):
+        self.collection_results.update_one(
+            {},
+            {
+                '$set':{'IsCross':request.is_cross}
+            },
+            upsert=True
+        )
+        return allert_server_pb2.SetSendImageResultResponse(message="IsCross set")
+    def GetIsCrossResult(self, request, context):
+        is_cross=self.collection_results.find_one({})['IsCross']
+        return allert_server_pb2.GetIsCrossResultResponse(is_cross=is_cross)
     def GetAccidentResult(self, request, context):
         accident=self.collection_results.find_one({})['Accident']
         return allert_server_pb2.GetAccidentResultResponse(accident=accident)
@@ -190,6 +232,22 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
     def GetSendImageResult(self, request, context):
         image=self.collection_results.find_one({})['Image']
         return allert_server_pb2.GetSendImageResultResponse(image=image)
+    def GetOnResults(self, request, context):
+        results=[]
+        all_results=self.collection_results.find_one({})
+        if self.collection_accident_alert.find_one({'IsOn':True}):
+            results+=['accident '+str(all_results['Accident'])]
+        if self.collection_count_alert.find_one({'IsOn':True}):
+            results+=['count '+str(all_results['Count'])]
+        if self.collection_send_image_alert.find_one({'IsOn':True}):
+            results+=['image '+str(all_results['Image'])]
+        if self.collection_is_empty_alert.find_one({'IsOn':True}):
+            results+=['is_empty '+str(all_results['IsEmpty'])]
+        if self.collection_is_cross_alert.find_one({'IsOn':True}):
+            results+=['is_cross '+str(all_results['IsCross'])]
+        if self.collection_odd_event_alert.find_one({'IsOn':True}):
+            results+=['odd_event '+str(all_results['OddEvent'])]
+        return allert_server_pb2.GetOnResultsResponse(results=results)
 def serve():
     client = MongoClient('mongodb://localhost:27017/')  # Change this to your MongoDB connection string
     db = client['AllertDB']  # Replace with your database name
@@ -198,6 +256,9 @@ def serve():
     server.add_insecure_port('[::]:50051')
     server.start()
     print("Server started on port 50051")
+    with open('Server/output.txt', 'a') as file:
+            # Write some text to the file
+            file.write("server is running")
     try:
         while True:
             time.sleep(86400)

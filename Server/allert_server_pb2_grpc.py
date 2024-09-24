@@ -4,7 +4,6 @@ import grpc
 import warnings
 import sys
 import os
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Server import allert_server_pb2 as allert__server__pb2
@@ -64,10 +63,20 @@ class AlertServiceStub(object):
                 request_serializer=allert__server__pb2.AccidentAlertRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.AccidentAlertResponse.FromString,
                 _registered_method=True)
+        self.IsCrossAlertOn = channel.unary_unary(
+                '/alerts.AlertService/IsCrossAlertOn',
+                request_serializer=allert__server__pb2.IsCrossAlertRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.IsCrossAlertResponse.FromString,
+                _registered_method=True)
         self.AccidentAlertOff = channel.unary_unary(
                 '/alerts.AlertService/AccidentAlertOff',
                 request_serializer=allert__server__pb2.AccidentAlertRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.AccidentAlertResponse.FromString,
+                _registered_method=True)
+        self.IsCrossAlertOff = channel.unary_unary(
+                '/alerts.AlertService/IsCrossAlertOff',
+                request_serializer=allert__server__pb2.IsCrossAlertRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.IsCrossAlertResponse.FromString,
                 _registered_method=True)
         self.OddEventAlertOn = channel.unary_unary(
                 '/alerts.AlertService/OddEventAlertOn',
@@ -114,6 +123,11 @@ class AlertServiceStub(object):
                 request_serializer=allert__server__pb2.SetIsEmptyResultRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.SetIsEmptyResultResponse.FromString,
                 _registered_method=True)
+        self.SetIsCrossResult = channel.unary_unary(
+                '/alerts.AlertService/SetIsCrossResult',
+                request_serializer=allert__server__pb2.SetIsCrossResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetIsCrossResultResponse.FromString,
+                _registered_method=True)
         self.GetCountResult = channel.unary_unary(
                 '/alerts.AlertService/GetCountResult',
                 request_serializer=allert__server__pb2.GetCountResultRequest.SerializeToString,
@@ -138,6 +152,16 @@ class AlertServiceStub(object):
                 '/alerts.AlertService/GetIsEmptyResult',
                 request_serializer=allert__server__pb2.GetIsEmptyResultRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.GetIsEmptyResultResponse.FromString,
+                _registered_method=True)
+        self.GetIsCrossResult = channel.unary_unary(
+                '/alerts.AlertService/GetIsCrossResult',
+                request_serializer=allert__server__pb2.GetIsCrossResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetIsCrossResultResponse.FromString,
+                _registered_method=True)
+        self.GetOnResults = channel.unary_unary(
+                '/alerts.AlertService/GetOnResults',
+                request_serializer=allert__server__pb2.GetOnResultsRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetOnResultsResponse.FromString,
                 _registered_method=True)
 
 
@@ -174,7 +198,19 @@ class AlertServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def IsCrossAlertOn(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def AccidentAlertOff(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def IsCrossAlertOff(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -234,6 +270,12 @@ class AlertServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SetIsCrossResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetCountResult(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -259,6 +301,18 @@ class AlertServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetIsEmptyResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetIsCrossResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetOnResults(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -292,10 +346,20 @@ def add_AlertServiceServicer_to_server(servicer, server):
                     request_deserializer=allert__server__pb2.AccidentAlertRequest.FromString,
                     response_serializer=allert__server__pb2.AccidentAlertResponse.SerializeToString,
             ),
+            'IsCrossAlertOn': grpc.unary_unary_rpc_method_handler(
+                    servicer.IsCrossAlertOn,
+                    request_deserializer=allert__server__pb2.IsCrossAlertRequest.FromString,
+                    response_serializer=allert__server__pb2.IsCrossAlertResponse.SerializeToString,
+            ),
             'AccidentAlertOff': grpc.unary_unary_rpc_method_handler(
                     servicer.AccidentAlertOff,
                     request_deserializer=allert__server__pb2.AccidentAlertRequest.FromString,
                     response_serializer=allert__server__pb2.AccidentAlertResponse.SerializeToString,
+            ),
+            'IsCrossAlertOff': grpc.unary_unary_rpc_method_handler(
+                    servicer.IsCrossAlertOff,
+                    request_deserializer=allert__server__pb2.IsCrossAlertRequest.FromString,
+                    response_serializer=allert__server__pb2.IsCrossAlertResponse.SerializeToString,
             ),
             'OddEventAlertOn': grpc.unary_unary_rpc_method_handler(
                     servicer.OddEventAlertOn,
@@ -342,6 +406,11 @@ def add_AlertServiceServicer_to_server(servicer, server):
                     request_deserializer=allert__server__pb2.SetIsEmptyResultRequest.FromString,
                     response_serializer=allert__server__pb2.SetIsEmptyResultResponse.SerializeToString,
             ),
+            'SetIsCrossResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetIsCrossResult,
+                    request_deserializer=allert__server__pb2.SetIsCrossResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetIsCrossResultResponse.SerializeToString,
+            ),
             'GetCountResult': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCountResult,
                     request_deserializer=allert__server__pb2.GetCountResultRequest.FromString,
@@ -366,6 +435,16 @@ def add_AlertServiceServicer_to_server(servicer, server):
                     servicer.GetIsEmptyResult,
                     request_deserializer=allert__server__pb2.GetIsEmptyResultRequest.FromString,
                     response_serializer=allert__server__pb2.GetIsEmptyResultResponse.SerializeToString,
+            ),
+            'GetIsCrossResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetIsCrossResult,
+                    request_deserializer=allert__server__pb2.GetIsCrossResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetIsCrossResultResponse.SerializeToString,
+            ),
+            'GetOnResults': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOnResults,
+                    request_deserializer=allert__server__pb2.GetOnResultsRequest.FromString,
+                    response_serializer=allert__server__pb2.GetOnResultsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -514,6 +593,33 @@ class AlertService(object):
             _registered_method=True)
 
     @staticmethod
+    def IsCrossAlertOn(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/IsCrossAlertOn',
+            allert__server__pb2.IsCrossAlertRequest.SerializeToString,
+            allert__server__pb2.IsCrossAlertResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def AccidentAlertOff(request,
             target,
             options=(),
@@ -530,6 +636,33 @@ class AlertService(object):
             '/alerts.AlertService/AccidentAlertOff',
             allert__server__pb2.AccidentAlertRequest.SerializeToString,
             allert__server__pb2.AccidentAlertResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def IsCrossAlertOff(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/IsCrossAlertOff',
+            allert__server__pb2.IsCrossAlertRequest.SerializeToString,
+            allert__server__pb2.IsCrossAlertResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -784,6 +917,33 @@ class AlertService(object):
             _registered_method=True)
 
     @staticmethod
+    def SetIsCrossResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetIsCrossResult',
+            allert__server__pb2.SetIsCrossResultRequest.SerializeToString,
+            allert__server__pb2.SetIsCrossResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def GetCountResult(request,
             target,
             options=(),
@@ -908,6 +1068,60 @@ class AlertService(object):
             '/alerts.AlertService/GetIsEmptyResult',
             allert__server__pb2.GetIsEmptyResultRequest.SerializeToString,
             allert__server__pb2.GetIsEmptyResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetIsCrossResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetIsCrossResult',
+            allert__server__pb2.GetIsCrossResultRequest.SerializeToString,
+            allert__server__pb2.GetIsCrossResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetOnResults(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetOnResults',
+            allert__server__pb2.GetOnResultsRequest.SerializeToString,
+            allert__server__pb2.GetOnResultsResponse.FromString,
             options,
             channel_credentials,
             insecure,

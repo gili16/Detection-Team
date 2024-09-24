@@ -134,6 +134,7 @@ def process_frame(image, coord1, coord2, output_path, filename):
         output_frame_path = os.path.join(output_path, filename)
         cv2.imwrite(output_frame_path, image_with_line)
         print(f"Object found on the line in frame {filename}. Saved with annotation.")
+    return object_on_line
 
 def process_all_frames(folder_path, coord1, coord2, output_folder):
     """
@@ -142,7 +143,7 @@ def process_all_frames(folder_path, coord1, coord2, output_folder):
     # Ensure output folder exists
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    
+    is_cross=False
     # Loop through all image files in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith(('.jpg', '.png', '.jpeg')):
@@ -155,7 +156,9 @@ def process_all_frames(folder_path, coord1, coord2, output_folder):
                 continue
 
             # Process the frame
-            process_frame(frame, coord1, coord2, output_folder, filename)
+            is_cross=is_cross or process_frame(frame, coord1, coord2, output_folder, filename)
+            
+    return is_cross
 
 def delete_images_from_directory(directory_path):
     # Supported image file extensions
@@ -171,14 +174,14 @@ def delete_images_from_directory(directory_path):
             except Exception as e:
                 print(f"Error deleting {image}: {e}")
 
-def mark_objects_on_first_frame(frame_path, output_path):
+def mark_objects_on_first_frame(frame, output_path):
     """
     Detect objects in the first frame, mark them, and save the marked frame in a separate directory.
     """
-    frame = cv2.imread(frame_path)
+    # frame = cv2.imread(frame_path)
     
     if frame is None:
-        print(f"Failed to load the frame at {frame_path}")
+        print(f"Failed to load the frame at ")
         return
     
     # Detect objects in the frame
