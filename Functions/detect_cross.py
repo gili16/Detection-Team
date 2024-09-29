@@ -136,10 +136,11 @@ def process_frame(image, coord1, coord2, output_path, filename):
         print(f"Object found on the line in frame {filename}. Saved with annotation.")
     return object_on_line
 
-def process_all_frames(folder_path, coord1, coord2, output_folder):
+def process_all_frames_cross(folder_path, coord1, coord2, output_folder):
     """
     Process all frames in the folder and check for objects on the line segment.
     """
+    
     # Ensure output folder exists
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -211,4 +212,4 @@ if __name__ == "__main__":
     if os.path.exists(output_folder):
         delete_images_from_directory(output_folder)
     # Process all frames in the folder
-    process_all_frames(frames_folder, line_start, line_end, output_folder)
+    process_all_frames_cross(frames_folder, line_start, line_end, output_folder)

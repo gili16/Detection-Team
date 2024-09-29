@@ -18,7 +18,7 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
         self.collection_is_empty_alert = db['IsEmptyAllert']
         self.collection_is_cross_alert = db['IsCrossAllert']
         self.collection_results=db['Results']
-    def CountAllertOn(self, request, context):
+    def CountAlertOn(self, request, context):
         # image_data = request.image  # This will be bytes
         # print(self.collection_count_alert.find_one({'IsOn':True}))
         obj=self.collection_count_alert.find_one({'IsOn':True})
@@ -41,7 +41,7 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
             )
         return allert_server_pb2.CountAlertResponse(message="Count Alert is ON")
 
-    def CountAllertOff(self, request, context):
+    def CountAlertOff(self, request, context):
         self.collection_count_alert.update_one(
             {},  # No filter, update the first document
             {'$set': {'IsOn': False}}
@@ -155,12 +155,14 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
         return allert_server_pb2.IsCrossAlertResponse(message="IsCross Alert is ON")
 
     def IsCrossAlertOff(self, request, context):
+        print("off")
         self.collection_is_cross_alert.update_one(
             {},  # No filter
             {'$set': {'IsOn': False}}
         )
         return allert_server_pb2.IsEmptyAlertResponse(message="Is Cross Alert is OFF")
     def SetCountResult(self, request, context):
+        print(request.count)
         self.collection_results.update_one(
             {},
             {
@@ -188,10 +190,12 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
         )
         return allert_server_pb2.SetIsEmptyResultResponse(message="IsEmpty set")
     def SetOddEventResult(self, request, context):
+        new_event={'date':request.odd_event.date,'description':request.odd_event.description}
+        odd_events=self.collection_results.find_one({})['OddEvent']
         self.collection_results.update_one(
             {},
             {
-                '$set':{'OddEvent':request.odd_event}
+                '$set':{'OddEvent': odd_events + [new_event] if odd_events else [new_event]}
             },
             upsert=True
         )
@@ -237,17 +241,109 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
         all_results=self.collection_results.find_one({})
         if self.collection_accident_alert.find_one({'IsOn':True}):
             results+=['accident '+str(all_results['Accident'])]
+        else:
+            results+=['None']
         if self.collection_count_alert.find_one({'IsOn':True}):
-            results+=['count '+str(all_results['Count'])]
+            results+=['count objects'+str(all_results['Count'])]
+        else:
+            results+=['None']
         if self.collection_send_image_alert.find_one({'IsOn':True}):
             results+=['image '+str(all_results['Image'])]
+        else:
+            results+=['None']
         if self.collection_is_empty_alert.find_one({'IsOn':True}):
             results+=['is_empty '+str(all_results['IsEmpty'])]
+        else:
+            results+=['None']
         if self.collection_is_cross_alert.find_one({'IsOn':True}):
             results+=['is_cross '+str(all_results['IsCross'])]
+        else:
+            results+=['None']
         if self.collection_odd_event_alert.find_one({'IsOn':True}):
-            results+=['odd_event '+str(all_results['OddEvent'])]
-        return allert_server_pb2.GetOnResultsResponse(results=results)
+            odd_events="oddEvents: "
+            for event in self.collection_results['OddEvent']:
+                odd_events+=event['date']+event['description']+" "
+            results+=[odd_events]
+        else:
+            results+=['None']
+        return allert_server_pb2.GetOnResultsResponse(
+            results=results
+        )
+    def NewDay(self, request, context):
+        self.collection_accident_alert.update_one(
+            {},
+            {            
+                '$set':{'IsOn':False,
+                        'Count':0
+                    }          
+            },
+            upsert=True
+        )
+        self.collection_odd_event_alert.update_one(
+            {},
+            {            
+                '$set':{'IsOn':False,
+                        'Count':0
+                    }          
+            },
+            upsert=True
+        )
+        self.collection_is_cross_alert.update_one(
+            {},
+            {            
+                '$set':{'IsOn':False,
+                        'Count':0,
+                        'coordinate1':[],
+                        'coordinate2':[],
+                        'image':b''
+                    }          
+            },
+            upsert=True
+        )
+        self.collection_count_alert.update_one(
+            {},
+            {            
+                '$set':{'IsOn':False,
+                        'Count':0,
+                        'coordinate1':[],
+                        'coordinate2':[]
+                    }          
+            },
+            upsert=True
+        )
+        self.collection_is_empty_alert.update_one(
+            {},
+            {            
+                '$set':{'IsOn':False,
+                        'Count':0
+                    }          
+            },
+            upsert=True
+        )
+        self.collection_send_image_alert.update_one(
+            {},
+            {            
+                '$set':{'IsOn':False,
+                        'Count':0
+                    }          
+            },
+            upsert=True
+        )
+        self.collection_results.update_one(
+            {},
+            {            
+                '$set':{
+                    'Count':0,
+                    'Accident':False,
+                    'IsEmpty':True,
+                    'IsCross':False,
+                    'Image':b'',
+                    'OddEvent':[]
+                    }          
+            },
+            upsert=True
+        )
+        return allert_server_pb2.NewDayResponse()
 def serve():
     client = MongoClient('mongodb://localhost:27017/')  # Change this to your MongoDB connection string
     db = client['AllertDB']  # Replace with your database name

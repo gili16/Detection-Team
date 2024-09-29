@@ -18,9 +18,10 @@ from Functions.detect_cross import delete_images_from_directory
 
 import grpc
 
-def process_image(image, alert_service,frames_directory,filename,is_thread_running,thread:Process,log_file):
+def process_image(image, alert_service,frames_directory,filename,is_thread_running,thread:Process,log_file,is_thread_odd_running, thread_odd:Process):
     # print(alert_service)
     # return
+    # print(os.path.join(frames_directory,filename))
     cv2.imwrite(os.path.join(frames_directory,filename),image)
     """
     Process a single image based on active alerts.
@@ -35,6 +36,7 @@ def process_image(image, alert_service,frames_directory,filename,is_thread_runni
 
     # Check alerts and call corresponding functions
     if alert_service['CountAllert']['IsOn'] and not is_thread_running:
+        print("count")
         is_thread_running=True
         x1=alert_service['CountAllert']['IsOn']['coordinate1'][0]
         y1=alert_service['CountAllert']['IsOn']['coordinate1'][1]
@@ -50,18 +52,25 @@ def process_image(image, alert_service,frames_directory,filename,is_thread_runni
         
     
     if alert_service['SendImageAllert']['IsOn']:
+        print("send")
         result=send_image(image)
-        with grpc.insecure_channel('localhost:50051') as channel:
-            stub = allert_server_pb2_grpc.AlertServiceStub(channel)
-            response = stub.SetSendImageResult(allert_server_pb2.SetSendImageResultRequest(
-                image=result.tobytes()
-            ))
-            with open(log_file, 'a') as file:
-                # Write some text to the file
-                file.write("SetSendImageResultResonse:"+ response.message+'\n')
-            # print("SetSendImageResultResonse:", response.message)
+        is_success, buffer = cv2.imencode(".jpg", result) 
+        if is_success:
+            with grpc.insecure_channel('localhost:50051') as channel:
+                stub = allert_server_pb2_grpc.AlertServiceStub(channel)
+                response = stub.SetSendImageResult(allert_server_pb2.SetSendImageResultRequest(
+                    image=buffer.tobytes()
+                ))
+                with open(log_file, 'a') as file:
+                    # Write some text to the file
+
+                    file.write("SetSendImageResultResonse:"+ response.message+'\n')
+
+        else:
+            print("saving image failed")
     
     if alert_service['AccidentAllert']['IsOn']:
+        print("accident")
         result=accident()
         with grpc.insecure_channel('localhost:50051') as channel:
             stub = allert_server_pb2_grpc.AlertServiceStub(channel)
@@ -71,21 +80,20 @@ def process_image(image, alert_service,frames_directory,filename,is_thread_runni
             with open(log_file, 'a') as file:
                 # Write some text to the file
                 file.write("SetAccidentResultResonse::"+ response.message+'\n')
-            # print("SetAccidentResultResonse:", response.message)
     
-    if alert_service['OddEventAllert']['IsOn']:
-        result=odd_event()
-        with grpc.insecure_channel('localhost:50051') as channel:
-            stub = allert_server_pb2_grpc.AlertServiceStub(channel)
-            response = stub.SetOddEventResult(allert_server_pb2.SetOddEventResultRequest(
-                odd_event=result
-            ))
-            with open(log_file, 'a') as file:
-                # Write some text to the file
-                file.write("SetOddEventResultResonse::"+ response.message+'\n')
-            # print("SetCountResultResonse:", response.message)
+    if alert_service['OddEventAllert']['IsOn'] and not is_thread_odd_running:
+        thread_odd=Process(target=odd_event,args=(frames_directory,'Functions/output'))
+        thread_odd.start()
+        is_thread_odd_running=True
+    else:
+        if not alert_service['OddEventAllert']['IsOn'] and is_thread_odd_running:
+            thread_odd.terminate()
+            thread_odd.join()
+            thread_odd=None
+            is_thread_odd_running=False
     
     if alert_service['IsEmptyAlert']['IsOn']:
+        print("is empty")
         result=is_empty(image)
         with grpc.insecure_channel('localhost:50051') as channel:
             stub = allert_server_pb2_grpc.AlertServiceStub(channel)
@@ -95,16 +103,16 @@ def process_image(image, alert_service,frames_directory,filename,is_thread_runni
             with open(log_file, 'a') as file:
                 # Write some text to the file
                 file.write("SetIsEmptyResultResonse::"+ response.message+'\n')
-            # print("SetIsEmptyResultResonse:", response.message)
 
     if alert_service['IsCrossAlert']['IsOn']:
+        print("is cross")
         x1=alert_service['IsCrossAlert']['IsOn']['coordinate1'][0]
         y1=alert_service['IsCrossAlert']['IsOn']['coordinate1'][1]
         x2=alert_service['IsCrossAlert']['IsOn']['coordinate2'][0]
         y2=alert_service['IsCrossAlert']['IsOn']['coordinate2'][1]
         line_start=(x1,y1)
         line_end=(x2,y2)
-        first_frame=alert_service['IsCrossAlert']['IsOn']['image']
+        # first_frame=alert_service['IsCrossAlert']['IsOn']['image']
         
         result=is_cross(frames_directory,line_start,line_end,image,filename)
         with grpc.insecure_channel('localhost:50051') as channel:
@@ -114,15 +122,8 @@ def process_image(image, alert_service,frames_directory,filename,is_thread_runni
             ))
             with open(log_file, 'a') as file:
                 # Write some text to the file
-                file.write("SetIsCrossResultResonse::"+ response.message+'\n')
-            response = stub.IsCrossAlertOff(allert_server_pb2.IsCrossAlertRequest(
-                
-            ))
-            with open(log_file, 'a') as file:
-                # Write some text to the file
-                file.write("is cross off::"+ response.message+'\n')
-            # print("is Cross off:", response.message)
-    return is_thread_running,thread
+                file.write("SetIsCrossResultResonse::"+ response.message+str(result)+'\n')
+    return is_thread_running,thread,is_thread_odd_running,thread_odd
 
 def process_queue(image_queue, db,output_directory,log_file):
     """
@@ -135,6 +136,8 @@ def process_queue(image_queue, db,output_directory,log_file):
    
     is_thread_running=False
     thread=None
+    is_thread_odd_running=False
+    thread_odd=None
     i=0
     while True :
         alert_service = {
@@ -166,16 +169,22 @@ def process_queue(image_queue, db,output_directory,log_file):
         }
         if not image_queue.empty():
             image = image_queue.get()  # Get the next image from the queue
-            cv2.imwrite(os.path.join(output_directory,"image"+str(i)),image)
-            is_thread_running,thread=process_image(image, alert_service,output_directory,os.path.join(output_directory,"image"+str(i)),is_thread_running,thread,log_file)
+            print(os.path.join(output_directory,"image"+str(i)))
+            cv2.imwrite(os.path.join(output_directory,"image"+str(i)+".jpg"),image)
+            is_thread_running,thread,is_thread_odd_running,thread_odd=process_image(image, alert_service,output_directory,os.path.join(output_directory,"image"+str(i)),is_thread_running,thread,log_file,is_thread_odd_running,thread_odd)
             i+=1
+            print("analyzing frame: "+str(i))
+            time.sleep(3)  # Wait before checking again
         else:
             print("Queue is empty, waiting for images...")
             time.sleep(3)  # Wait before checking again
-            directory="../../to_git/detection-team/training/DATA/UAV-benchmark-M/M0202"
-            image_queue=read_images_from_directory(directory)
-    thread.terminate()
-    thread.join()
+            # directory="../../to_git/detection-team/training/DATA/UAV-benchmark-M/M0202"
+            # image_queue=read_images_from_directory(directory)
+            thread.terminate()
+            thread.join()
+            thread_odd.terminate()
+            thread_odd.join()
+            break
 
 # Example usage
 if __name__ == "__main__":
@@ -184,8 +193,9 @@ if __name__ == "__main__":
     db = client['AllertDB']  # Replace with your database name
     image_queue = queue.Queue()  # Assuming this queue is populated elsewhere
     image_queue=read_images_from_directory(directory)
-    output_directory="Thread/frames"
-    log_file=('Thread/output.txt')
+    output_directory="Thread\\frames"
+    log_file=('Thread\output.txt')
+
     # Start processing the queue
     with open(log_file, 'a') as file:
             # Write some text to the file

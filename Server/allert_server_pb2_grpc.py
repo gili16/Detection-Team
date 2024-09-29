@@ -5,9 +5,7 @@ import warnings
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Server import allert_server_pb2 as allert__server__pb2
-# import allert_server_pb2 as allert__server__pb2
 
 GRPC_GENERATED_VERSION = '1.66.1'
 GRPC_VERSION = grpc.__version__
@@ -38,13 +36,13 @@ class AlertServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.CountAllertOn = channel.unary_unary(
-                '/alerts.AlertService/CountAllertOn',
+        self.CountAlertOn = channel.unary_unary(
+                '/alerts.AlertService/CountAlertOn',
                 request_serializer=allert__server__pb2.CountAlertRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.CountAlertResponse.FromString,
                 _registered_method=True)
-        self.CountAllertOff = channel.unary_unary(
-                '/alerts.AlertService/CountAllertOff',
+        self.CountAlertOff = channel.unary_unary(
+                '/alerts.AlertService/CountAlertOff',
                 request_serializer=allert__server__pb2.CountAlertRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.CountAlertResponse.FromString,
                 _registered_method=True)
@@ -163,18 +161,23 @@ class AlertServiceStub(object):
                 request_serializer=allert__server__pb2.GetOnResultsRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.GetOnResultsResponse.FromString,
                 _registered_method=True)
+        self.NewDay = channel.unary_unary(
+                '/alerts.AlertService/NewDay',
+                request_serializer=allert__server__pb2.NewDayRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.NewDayResponse.FromString,
+                _registered_method=True)
 
 
 class AlertServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def CountAllertOn(self, request, context):
+    def CountAlertOn(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CountAllertOff(self, request, context):
+    def CountAlertOff(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -318,16 +321,22 @@ class AlertServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def NewDay(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AlertServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'CountAllertOn': grpc.unary_unary_rpc_method_handler(
-                    servicer.CountAllertOn,
+            'CountAlertOn': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountAlertOn,
                     request_deserializer=allert__server__pb2.CountAlertRequest.FromString,
                     response_serializer=allert__server__pb2.CountAlertResponse.SerializeToString,
             ),
-            'CountAllertOff': grpc.unary_unary_rpc_method_handler(
-                    servicer.CountAllertOff,
+            'CountAlertOff': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountAlertOff,
                     request_deserializer=allert__server__pb2.CountAlertRequest.FromString,
                     response_serializer=allert__server__pb2.CountAlertResponse.SerializeToString,
             ),
@@ -446,6 +455,11 @@ def add_AlertServiceServicer_to_server(servicer, server):
                     request_deserializer=allert__server__pb2.GetOnResultsRequest.FromString,
                     response_serializer=allert__server__pb2.GetOnResultsResponse.SerializeToString,
             ),
+            'NewDay': grpc.unary_unary_rpc_method_handler(
+                    servicer.NewDay,
+                    request_deserializer=allert__server__pb2.NewDayRequest.FromString,
+                    response_serializer=allert__server__pb2.NewDayResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'alerts.AlertService', rpc_method_handlers)
@@ -458,7 +472,7 @@ class AlertService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def CountAllertOn(request,
+    def CountAlertOn(request,
             target,
             options=(),
             channel_credentials=None,
@@ -471,7 +485,7 @@ class AlertService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/alerts.AlertService/CountAllertOn',
+            '/alerts.AlertService/CountAlertOn',
             allert__server__pb2.CountAlertRequest.SerializeToString,
             allert__server__pb2.CountAlertResponse.FromString,
             options,
@@ -485,7 +499,7 @@ class AlertService(object):
             _registered_method=True)
 
     @staticmethod
-    def CountAllertOff(request,
+    def CountAlertOff(request,
             target,
             options=(),
             channel_credentials=None,
@@ -498,7 +512,7 @@ class AlertService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/alerts.AlertService/CountAllertOff',
+            '/alerts.AlertService/CountAlertOff',
             allert__server__pb2.CountAlertRequest.SerializeToString,
             allert__server__pb2.CountAlertResponse.FromString,
             options,
@@ -1122,6 +1136,33 @@ class AlertService(object):
             '/alerts.AlertService/GetOnResults',
             allert__server__pb2.GetOnResultsRequest.SerializeToString,
             allert__server__pb2.GetOnResultsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def NewDay(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/NewDay',
+            allert__server__pb2.NewDayRequest.SerializeToString,
+            allert__server__pb2.NewDayResponse.FromString,
             options,
             channel_credentials,
             insecure,

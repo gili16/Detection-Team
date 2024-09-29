@@ -7,11 +7,12 @@ from Functions.detect_blur import process_image
 from Functions.detect_cross import *
 from Functions.people_alert import track_objects
 from Functions.tracking_in_area import track_objects as count_objects
+from Functions.detect_unusual_events import process_all_frames
 def send_image(image):
     return process_image(image,threshold=750)
 
-def odd_event():
-    return True
+def odd_event(frames_directory,output_folder):
+    process_all_frames(frames_directory,output_folder)
 
 def count(x1, y1, x2, y2,frames_directory):
     count_objects(frames_directory,(x1,y1,x2,y2))
@@ -33,7 +34,7 @@ def is_cross(frames_directory,line_start,line_end,frame,filename):
     # mark_objects_on_first_frame(frame, marked_frame_output)
     # line_start = (50, 0)  # Coordinates of the line start
     # line_end = (1450, 1000)    # Coordinates of the line end
-    output_folder = './processed_frames'  # Folder to save processed frames
+    output_folder = './frames'  # Folder to save processed frames
     if os.path.exists(output_folder):
         delete_images_from_directory(output_folder)
     # Process all frames in the folder

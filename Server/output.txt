@@ -1,15 +1,1 @@
-server is runningserver is runningCount Alert is ONIsCross ONSend image alertSend Image Alert is ONaccident alertAccident Alert is ONodd event alertOdd Event Alert is ONis empty on alertIs Empty Alert is ONIsCross on alertIsCross Alert is ONCount Alert is ONIsCross ONSend image alertSend Image Alert is ONaccident alertAccident Alert is ONodd event alertOdd Event Alert is ONis empty on alertIs Empty Alert is ONIsCross on alertIsCross Alert is ONaccident resultTruecount result10odd event resultTrueis empty resultFalsesend image resultb'True'is cross resultTrueserver is runningCount Alert is ONIsCross ONSend image alertSend Image Alert is ONaccident alertAccident Alert is ONodd event alertOdd Event Alert is ONis empty on alertIs Empty Alert is ONIsCross on alertIsCross Alert is ONaccident resultTruecount result10odd event resultTrueis empty resultFalsesend image resultb'True'is cross resultTrueCount Alert is ONIsCross ONSend image alertSend Image Alert is ONaccident alertAccident Alert is ONodd event alertOdd Event Alert is ONis empty on alertIs Empty Alert is ONIsCross on alertIsCross Alert is ONaccident resultTruecount result10odd event resultTrueis empty resultFalsesend image resultb'True'is cross resultTrueCount Alert is ONIsCross ONSend image alertSend Image Alert is ONaccident alertAccident Alert is ONodd event alertOdd Event Alert is ONis empty on alertIs Empty Alert is ONIsCross on alertIsCross Alert is ONaccident resultTruecount result10odd event resultTrueis empty resultFalsesend image resultb'True'is cross resultTrueon results['accident True', 'count 10', "imageb'True'", 'is_empty False', 'is_cross True', 'odd_event True']server is runningCount Alert is ON
-IsCross ON
-Send image alertSend Image Alert is ON
-accident alertAccident Alert is ON
-odd event alertOdd Event Alert is ON
-is empty on alertIs Empty Alert is ON
-IsCross on alertIsCross Alert is ON
-accident resultTrue
-count result10
-odd event resultTrue
-is empty resultFalse
-send image resultb'True'
-is cross resultTrue
-on results['accident True', 'count 10', "image b'True'", 'is_empty False', 'is_cross True', 'odd_event True']
-server is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is running
+server is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is runningserver is running

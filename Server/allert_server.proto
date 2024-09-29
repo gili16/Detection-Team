@@ -3,8 +3,8 @@ syntax = "proto3";
 package alerts;
 
 service AlertService {
-    rpc CountAllertOn(CountAlertRequest) returns (CountAlertResponse);
-    rpc CountAllertOff(CountAlertRequest) returns (CountAlertResponse);
+    rpc CountAlertOn(CountAlertRequest) returns (CountAlertResponse);
+    rpc CountAlertOff(CountAlertRequest) returns (CountAlertResponse);
     rpc SendImageAlertOn(SendImageAlertRequest) returns (SendImageAlertResponse);
     rpc SendImageAlertOff(SendImageAlertRequest) returns (SendImageAlertResponse);
     rpc AccidentAlertOn(AccidentAlertRequest) returns (AccidentAlertResponse);
@@ -28,11 +28,12 @@ service AlertService {
     rpc GetIsEmptyResult(GetIsEmptyResultRequest) returns (GetIsEmptyResultResponse);
     rpc GetIsCrossResult(GetIsCrossResultRequest) returns (GetIsCrossResultResponse);
     rpc GetOnResults(GetOnResultsRequest) returns (GetOnResultsResponse);
+    rpc NewDay(NewDayRequest) returns (NewDayResponse);
 }
 
 message CountAlertRequest {
-    bool is_on = 1;
-    int32 count = 2;
+    
+    
     int32 coordinate1_x = 3;
     int32 coordinate1_y = 4;
     int32 coordinate2_x = 5;
@@ -45,7 +46,6 @@ message CountAlertResponse {
 }
 
 message SendImageAlertRequest {
-    bool is_on = 1;
 }
 
 message SendImageAlertResponse {
@@ -53,7 +53,6 @@ message SendImageAlertResponse {
 }
 
 message AccidentAlertRequest {
-    bool is_on = 1;
 }
 
 message AccidentAlertResponse {
@@ -61,7 +60,6 @@ message AccidentAlertResponse {
 }
 
 message OddEventAlertRequest {
-    bool is_on = 1;
 }
 
 message OddEventAlertResponse {
@@ -69,7 +67,6 @@ message OddEventAlertResponse {
 }
 
 message IsEmptyAlertRequest {
-    bool is_on = 1;
 }
 message IsCrossAlertRequest {
     int32 coordinate1_x = 3;
@@ -84,6 +81,7 @@ message IsCrossAlertResponse {
 message IsEmptyAlertResponse {
     string message = 1;
 }
+
 message SetCountResultRequest{
     int32 count=1;
 }
@@ -93,8 +91,12 @@ message SetAccidentResultRequest{
 message SetSendImageResultRequest{
     bytes image=1;
 }
+message Event{
+    string date=1;
+    string description=2;
+}
 message SetOddEventResultRequest{
-    bool odd_event=1;
+    Event odd_event=1;
 }
 message SetIsEmptyResultRequest{
     bool is_empty=1;
@@ -146,14 +148,20 @@ message GetSendImageResultResponse{
     bytes image=1;
 }
 message GetOddEventResultResponse{
-    bool odd_event=1;
+    repeated Event odd_event=1;
 }
 message GetIsEmptyResultResponse{
     bool is_empty=1;
 }
 message GetOnResultsRequest{
-
+    
 }
 message GetOnResultsResponse{
     repeated string results=1;
+}
+message NewDayRequest{
+
+}
+message NewDayResponse{
+    string message=1;
 }
