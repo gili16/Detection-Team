@@ -35,11 +35,10 @@ def display_one_result(result,destroy=True):
             widget.destroy()
         for widget in upper_left_frame.winfo_children():
             widget.destroy()
-    print(result)
     if isinstance(result, str) and result == "None":
                 pass
     elif isinstance(result, list):
-        result_list = "5 last Odd Events: " + ", ".join(result[:-5])
+        result_list = "5 last Odd Events: " + ", ".join(result[-5:])
         result_label = tk.Label(upper_left_frame, text=result_list, font=('Helvetica', 12), bg="white", fg="black")
         result_label.pack(side='top', fill="x", padx=1)
     
@@ -81,57 +80,12 @@ def display_auto_results(results):
 
     for result in results:
         display_one_result(result,destroy=False)
-        # if isinstance(result, str) and result == "None":
-        #     pass
-        # elif isinstance(result, list):
-        #     result_list = "Odd Events: " + ", ".join(result)
-        #     result_label = tk.Label(upper_left_frame, text=result_list, font=('Helvetica', 12), bg="white", fg="black")
-        #     result_label.pack(side='top', fill="x", padx=1)
-        # elif isinstance(result, bytes):
-        #     image_stream = BytesIO(result)
-        #     image = Image.open(image_stream)
-        #     image = image.resize((350, 200), Image.LANCZOS)
-        #     photo = ImageTk.PhotoImage(image)
-        #     image_label = tk.Label(upper_left_frame, image=photo)
-        #     image_label.image = photo
-        #     image_label.pack(side='top')
-        # else:
-        #     if isinstance(result, str):
-        #         result_parts=result.split(" ")
-        #         if result_parts[0]=="oddEvent:":
-        #             result_list = "Odd Events: " + ", ".join(result_parts[1:])
-        #             result_label = tk.Label(upper_left_frame, text=result_list, font=('Helvetica', 12), bg="white", fg="black")
-        #             result_label.pack(side='top', fill="x", padx=1) 
-        #         elif result_parts[0]=="image":
-        #             image_stream = BytesIO(result_parts[1])
-        #             image = Image.open(image_stream)
-        #             image = image.resize((350, 200), Image.LANCZOS)
-        #             photo = ImageTk.PhotoImage(image)
-        #             image_label = tk.Label(upper_left_frame, image=photo)
-        #             image_label.image = photo
-        #             image_label.pack(side='top')
-        #     else:
-        #         result_label = tk.Label(upper_left_frame, text=result, font=('Helvetica', 12), bg="white", fg="black")
-        #         result_label.pack(side='top', fill="x", padx=1)
 
 def display_manual_results(result):
     result_label = tk.Label(lower_left_frame, text=result, font=('Helvetica', 12), bg="black", fg="white")
     result_label.pack(side='top', fill="x", padx=1)
 
 def periodic_function():
-    # global toggle
-    # with open("img/image_1.jpg", "rb") as image_file:
-    #     image_bytes_1 = image_file.read()
-    # with open("img/image_2.jpg", "rb") as image_file:
-    #     image_bytes_2 = image_file.read()
-    # results = ['accident True', 'count 10', image_bytes_1, 'None', 'is_cross True', ["accident", "people", "bike"]] if toggle else ['accident False', 'count 5', image_bytes_2, 'is_empty False', 'is_cross False', ["incident", "car"]]
-    # toggle = not toggle
-    # with grpc.insecure_channel('localhost:50051') as channel:
-    #         stub = allert_server_pb2_grpc.AlertServiceStub(channel)            
-    #         response = stub.GetOnResults(allert_server_pb2.GetOnResultsRequest(                
-    #         ))
-    #         results=response.results
-    # display_auto_results(results)
     root.after(10000, periodic_function)
 
 def get_cross_input():
@@ -146,15 +100,8 @@ def get_cross_input():
         messagebox.showerror("Error", "Please enter valid integer values.")
         return None
 
-    image_path = filedialog.askopenfilename(title="Select an Image File")
-    if not image_path:
-        messagebox.showerror("Error", "Please select an image file.")
-        return None
 
-    with open(image_path, "rb") as image_file:
-        image_bytes = image_file.read()
-
-    return x1, y1, x2, y2, image_bytes
+    return x1, y1, x2, y2
 
 def show_results(action_num):
     action_map = {1: "Send Image",2:"Count Objects", 3: "Odd Event", 4: "Accident", 5: "Is Empty", 6:"Is Cross"}
@@ -244,13 +191,12 @@ def toggle_state(label_num):
             elif action_name == "Is Cross":
                 cross_input = get_cross_input()
                 if cross_input:
-                    x1, y1, x2, y2, image_bytes = cross_input
+                    x1, y1, x2, y2 = cross_input
                     response = stub.IsCrossAlertOn(allert_server_pb2.IsCrossAlertRequest(
                         coordinate1_x=x1,
                         coordinate1_y=y1,
                         coordinate2_x=x2,
                         coordinate2_y=y2,
-                        image=image_bytes
                     ))
 
                     # Process the cross input values and image as needed
@@ -287,12 +233,12 @@ def toggle_state(label_num):
 
 
 def show_results_or_retry(label_num):
-    elapsed_time = time.time() - start_times[label_num]
-    if elapsed_time < 10:
-        remaining_time = int(10 - elapsed_time)
-        messagebox.showinfo("Retry", f"Try again in {remaining_time} seconds")
-    else:
-        show_results(label_num)
+    # elapsed_time = time.time() - start_times[label_num]
+    # if elapsed_time < 10:
+    #     remaining_time = int(10 - elapsed_time)
+    #     messagebox.showinfo("Retry", f"Try again in {remaining_time} seconds")
+    # else:
+    show_results(label_num)
 
 right_frame = tk.Frame(root, bg="white", width=1050, height=800)
 right_frame.pack(side='left', fill='both', expand=True)

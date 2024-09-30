@@ -73,7 +73,6 @@ message IsCrossAlertRequest {
     int32 coordinate1_y = 4;
     int32 coordinate2_x = 5;
     int32 coordinate2_y = 6;
-    bytes image = 7;
 }
 message IsCrossAlertResponse {
     string message = 1;

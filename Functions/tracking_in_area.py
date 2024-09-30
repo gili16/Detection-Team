@@ -2,7 +2,7 @@ import sys
 import os
 import grpc
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import time
 from Server import allert_server_pb2, allert_server_pb2_grpc
 import warnings
 import cv2
@@ -92,7 +92,6 @@ def track_objects(frames_folder, bounding_box):
 
     while True:        
         for frame_index, frame_name in enumerate(sorted(os.listdir(frames_folder))):
-            print("hello count")
             frame_path = os.path.join(frames_folder, frame_name)
             if not frame_name.endswith('.jpg') and frame_name not in processed_frames:
                 continue
@@ -116,15 +115,12 @@ def track_objects(frames_folder, bounding_box):
                 with open('Functions/output.txt', 'a') as file:
                         # Write some text to the file
                         file.write(f"{current_second} - {results}\n")
-                # print(f"{time_str} - Total People: {total_people}, Total Cars: {total_cars}")
-                print("count"+str(results))
                 with grpc.insecure_channel('localhost:50051') as channel:
                     stub = allert_server_pb2_grpc.AlertServiceStub(channel)
                     response = stub.SetCountResult(allert_server_pb2.SetCountResultRequest(
                         count=results['people']+results['cars']
                     ))
-                    
-                # save_frame_with_bboxes(frame, bounding_box, tracked_objects, results_folder, current_second)
+            time.sleep(1)
 
 
 def save_frame_with_bboxes(frame, bounding_box, tracked_objects, results_folder, current_second):
@@ -144,9 +140,3 @@ def summarize_results(tracked_objects):
     total_cars = len([v for v in tracked_objects.values() if v['label'] == "car"])
     return {"people": total_people, "cars": total_cars}
 
-# if __name__ == "__main__":
-#     frames_folder = '../../../to_git/detection-team/training/DATA/UAV-benchmark-M/M0202'  
-#     bounding_box = (20, 20, 400, 400) 
-#     results = track_objects(frames_folder, bounding_box)
-    
-#     print(f"Total - People: {results['people']}, Cars: {results['cars']}")

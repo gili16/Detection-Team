@@ -24,11 +24,9 @@ class UnusualEvent:
             date= str(self.time),
             description= self.event
         )
-        print("hello")
         with grpc.insecure_channel('localhost:50051') as channel:
             stub = allert_server_pb2_grpc.AlertServiceStub(channel)
             
             response = stub.SetOddEventResult(allert_server_pb2.SetOddEventResultRequest(
                 odd_event=event_data
             ))
-        print(f"Event saved to MongoDB: {event_data}")

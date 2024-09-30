@@ -6,6 +6,7 @@ import glob
 from ultralytics import YOLO
 import sys
 import os
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Server import allert_server_pb2 as allert__server__pb2
 from Functions.event import UnusualEvent
@@ -28,29 +29,6 @@ object_tracker = {label: [] for label in TARGET_CLASSES}
 # Load pre-trained YOLOv8 model
 model = YOLO('yolov8n.pt')
 # model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
-
-def generate_beep_sound(duration=1.0, frequency=440):
-    sample_rate = 44100
-    n_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, n_samples, False)
-
-    wave = 0.5 * np.sin(2 * np.pi * frequency * t)
-    stereo_wave = np.column_stack((wave, wave))
-
-    sound_array = np.int16(stereo_wave * 32767)
-    sound = pygame.sndarray.make_sound(sound_array)
-    return sound
-
-def play_alert_sound():
-    """ Play an alert sound. """
-    try:
-        pygame.mixer.init()  # Ensure Pygame mixer is initialized
-        beep = generate_beep_sound(duration=1.0, frequency=440)  # Use the generated sound
-        beep.play()  # Play the sound
-        pygame.time.wait(500)  # Wait for 0.5 seconds to ensure the sound finishes
-    except pygame.error as e:
-        print(f"Error playing sound: {e}")
-
 
 def track_object_movement(frame_idx, detected_objects):
     global object_tracker
@@ -82,7 +60,6 @@ def track_object_movement(frame_idx, detected_objects):
                             'speed': speed,
                             'event': 'Speeding'
                         })
-                        # play_alert_sound()
 
             if label in ['car', 'truck', 'bus'] and len(object_tracker[label]) > 1:
                 prev_frame_idx, prev_center = object_tracker[label][-2]
@@ -96,7 +73,6 @@ def track_object_movement(frame_idx, detected_objects):
                             'speed': speed,
                             'event': 'Car Parked'
                         })
-                        # play_alert_sound()
 
     if people_count > GATHERING_THRESHOLD:
         people_positions = [obj['bbox'] for obj in detected_objects if obj['label'] == 'person']
@@ -120,10 +96,7 @@ def process_frame(frame, frame_idx, output_folder, filename):
     """
     Process a single frame: detect objects, track movements, and save output if unusual events are found.
     """
-    # print(type(model))
     results = model(frame)
-    # print(results)
-    # Process detections
     detected_objects = []
     for result in results:
         for obj in result.boxes.data:
@@ -160,13 +133,6 @@ def process_frame(frame, frame_idx, output_folder, filename):
                     cv2.putText(frame, f'{label} {event_type} ({speed:.2f})', (x1, y1 - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-        # Construct the output file path
-        # output_path = os.path.join(output_folder, filename)
-        # Save the frame with annotations
-        # cv2.imwrite(output_path, frame)
-        # print(f'Saved frame: {output_path}')
-
-        # Save the event to the database
         event_obj = UnusualEvent(event=event_type, image=frame)
         event_obj.save_to_db()
         return event_obj
@@ -179,8 +145,6 @@ def process_frame(frame, frame_idx, output_folder, filename):
 
 def process_all_frames(frames_folder, output_folder):
     while True:  # Infinite loop to keep checking for new frames
-        # new_frames = sorted(os.listdir(frames_folder))
-        print("hello odd")
         frame_files = sorted(os.listdir(frames_folder))
         result=False
         for frame_idx, frame_file in enumerate(frame_files):
@@ -198,8 +162,9 @@ def process_all_frames(frames_folder, output_folder):
             else:
                 with open('Functions/output.txt', 'a') as file:
                     # Write some text to the file
+
                     file.write("no unusual events found"+'\n')
-        # return result
+            time.sleep(1)
 
 def delete_images_from_directory(directory_path):
     image_extensions = ['*.png', '*.jpg', '*.jpeg', '*.bmp', '*.gif', '*.tiff']
@@ -213,10 +178,3 @@ def delete_images_from_directory(directory_path):
             except Exception as e:
                 print(f"Error deleting {image}: {e}")
 
-
-# # Example usage
-# frames_folder = '../../../to_git/detection-team/training/DATA/UAV-benchmark-M/M0202'
-# output_folder = './output/unusual_event'
-# delete_images_from_directory(output_folder)
-# result=process_all_frames(frames_folder, output_folder)
-# print(result)

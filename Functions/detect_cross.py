@@ -199,17 +199,3 @@ def mark_objects_on_first_frame(frame, output_path):
     print(f"Marked objects on the first frame saved at {output_path}")
 
 
-# Example usage
-if __name__ == "__main__":
-    frames_folder = './M0802'  # Path to folder containing all video frames
-    first_frame_path = './M0802/img000826.jpg'  # Path to the first frame image
-    marked_frame_output = './marked_frame.jpg'  # Path to save the marked first frame image
-    
-    mark_objects_on_first_frame(first_frame_path, marked_frame_output)
-    line_start = (50, 0)  # Coordinates of the line start
-    line_end = (1450, 1000)    # Coordinates of the line end
-    output_folder = './processed_frames'  # Folder to save processed frames
-    if os.path.exists(output_folder):
-        delete_images_from_directory(output_folder)
-    # Process all frames in the folder
-    process_all_frames_cross(frames_folder, line_start, line_end, output_folder)
