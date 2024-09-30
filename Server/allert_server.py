@@ -195,7 +195,7 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
         )
         return allert_server_pb2.NewDayResponse()
 
-def serve():
+def start_server():
     client = MongoClient('mongodb://localhost:27017/')  # Change this to your MongoDB connection string
     db = client['AllertDB']  # Replace with your database name
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -203,8 +203,9 @@ def serve():
     server.add_insecure_port('[::]:50051')
     server.start()
     print("Server started on port 50051")
-    with open('Server/output.txt', 'a') as file:
-        file.write("server is running")
+    return server
+
+def run_server(server):
     try:
         while True:
             time.sleep(86400)
@@ -212,4 +213,4 @@ def serve():
         server.stop(0)
 
 if __name__ == '__main__':
-    serve()
+    run_server(start_server())
