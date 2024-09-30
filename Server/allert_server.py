@@ -210,7 +210,8 @@ def run_server(server):
         while True:
             time.sleep(86400)
     except KeyboardInterrupt:
-        server.stop(0)
-
+        kill_server(server)
+def kill_server(server):
+    server.stop(0)
 if __name__ == '__main__':
     run_server(start_server())

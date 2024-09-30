@@ -191,10 +191,12 @@ def process_queue( db,output_directory,log_file):
                         
             except grpc.RpcError as e:
                 print(f"gRPC error: {e.code()} - {e.details()}")
-                thread.terminate()
-                thread.join()
-                thread_odd.terminate()
-                thread_odd.join()
+                if thread:
+                    thread.terminate()
+                    thread.join()
+                if thread_odd:
+                    thread_odd.terminate()
+                    thread_odd.join()
                 break
 
 # Example usage
