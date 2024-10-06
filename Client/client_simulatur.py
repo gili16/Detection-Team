@@ -58,7 +58,7 @@ def display_one_result(result,destroy=True):
         if isinstance(result, str):
             result_parts=result.split(" ")
             if result_parts[0]=="oddEvent:":
-                result_list = "Odd Events: " + ", ".join(result_parts[1:])
+                result_list = "Odd Events: " + ", ".join(list(result_parts[1])[-5:])
                 result_label = tk.Label(upper_left_frame, text=result_list, font=('Helvetica', 12), bg="white", fg="black")
                 result_label.pack(side='top', fill="x", padx=1) 
             elif result_parts[0]=="image":
@@ -86,7 +86,23 @@ def display_manual_results(result):
     result_label.pack(side='top', fill="x", padx=1)
 
 def periodic_function():
-    root.after(10000, periodic_function)
+    clear_manual_results()
+    with grpc.insecure_channel('localhost:50051') as channel:
+            stub = allert_server_pb2_grpc.AlertServiceStub(channel)
+            response=stub.GetOnResults(allert_server_pb2.GetOnResultsRequest())
+            if response.HasField('count_oneof'):
+                display_one_result(response.count,destroy=False)
+            if response.HasField('image_oneof'):
+                display_one_result(response.image,destroy=False)
+            if response.HasField('is_empty_oneof'):
+                display_one_result(response.is_empty,destroy=False)
+            if response.HasField('is_cross_oneof'):
+                display_one_result(response.is_cross,destroy=False)
+            if response.HasField('accident_oneof'):
+                display_one_result(response.accident,destroy=False)
+            if len(response.odd_event)>0:
+                display_one_result(response.odd_event,destroy=False)
+    root.after(5000, periodic_function)
 
 def get_cross_input():
     input_dialog = simpledialog.askstring("Input", "Enter x1, y1, x2, y2 values separated by commas (e.g., 10,20,30,40):")
@@ -137,6 +153,7 @@ def show_results(action_num):
             elif action_name == "Is Cross":
                 response = stub.GetIsCrossResult(allert_server_pb2.GetIsCrossResultRequest())
                 display_one_result(response.is_cross)
+    root.after(5000, periodic_function)
 
     # display_manual_results(f"Action: {actions[action_num - 1]}, Result: {result}")
 
@@ -233,11 +250,11 @@ def toggle_state(label_num):
 
 
 def show_results_or_retry(label_num):
-    # elapsed_time = time.time() - start_times[label_num]
-    # if elapsed_time < 10:
-    #     remaining_time = int(10 - elapsed_time)
-    #     messagebox.showinfo("Retry", f"Try again in {remaining_time} seconds")
-    # else:
+    elapsed_time = time.time() - start_times[label_num]
+    if elapsed_time < 10:
+        remaining_time = int(10 - elapsed_time)
+        messagebox.showinfo("Retry", f"only {remaining_time} seconds  had passed from the time the alert was turned ON\nresults may not be ready yet")
+    
     show_results(label_num)
 
 right_frame = tk.Frame(root, bg="white", width=1050, height=800)

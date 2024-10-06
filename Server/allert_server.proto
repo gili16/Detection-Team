@@ -155,9 +155,39 @@ message GetIsEmptyResultResponse{
 message GetOnResultsRequest{
     
 }
-message GetOnResultsResponse{
-    repeated string results=1;
+
+
+message GetOnResultsResponse {
+    oneof count_oneof {
+        int32 count = 1;          // The actual count
+        bool count_is_empty = 11; // Indicates that count is absent
+    }
+    
+    oneof is_cross_oneof {
+        bool is_cross = 2;          // Indicates whether it is cross
+        bool is_cross_empty = 12;   // Indicates that is_cross is absent
+    }
+
+    oneof is_empty_oneof {
+        bool is_empty = 3;          // Indicates whether it is empty
+        bool is_empty_empty = 13;   // Indicates that is_empty is absent
+    }
+
+    oneof image_oneof {
+        bytes image = 4;            // The image data
+        bool image_empty = 14;      // Indicates that image is absent
+    }
+
+    
+    repeated Event odd_event = 5; // List of events
+
+
+    oneof accident_oneof {
+        bool accident = 6;         // Indicates an accident
+        bool accident_empty = 16;  // Indicates that accident is absent
+    }
 }
+
 message NewDayRequest{
 
 }

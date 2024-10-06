@@ -3,8 +3,9 @@ from concurrent import futures
 from pymongo import MongoClient
 import allert_server_pb2
 import allert_server_pb2_grpc
+from allert_server_pb2 import Event
 import time
-
+import base64
 class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
     def __init__(self, db):
         self.db = db
@@ -126,7 +127,15 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
     # Define more result setters and getters as needed
      # Results getters
     def _get_result(self, key):
-        return self.collections['Results'].find_one({}).get(key)
+        # Find the result document
+        result = self.collections['Results'].find_one({})
+        
+        # If no key is provided or key is an empty string, return the whole document
+        if not key:
+            return result
+        
+        # Otherwise, return the value associated with the specific key
+        return result.get(key) if result else None
 
     def GetIsCrossResult(self, request, context):
         is_cross = self._get_result('IsCross')
@@ -151,27 +160,52 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
     def GetSendImageResult(self, request, context):
         image = self._get_result('Image')
         return allert_server_pb2.GetSendImageResultResponse(image=image)
-
+    # Decoding base64 string back to image bytes
+    def decode_image(encoded_str):
+        return base64.b64decode(encoded_str)
     # Handle multiple results
     def GetOnResults(self, request, context):
-        results = []
+        # Create a response object
+        response = allert_server_pb2.GetOnResultsResponse()
         all_results = self._get_result('')
-        if self.collections['accident_alert'].find_one({'IsOn': True}):
-            results.append(f"accident {all_results.get('Accident', 'None')}")
-        if self.collections['count_alert'].find_one({'IsOn': True}):
-            results.append(f"count objects {all_results.get('Count', 'None')}")
-        if self.collections['send_image_alert'].find_one({'IsOn': True}):
-            results.append(f"image {all_results.get('Image', 'None')}")
-        if self.collections['is_empty_alert'].find_one({'IsOn': True}):
-            results.append(f"is_empty {all_results.get('IsEmpty', 'None')}")
-        if self.collections['is_cross_alert'].find_one({'IsOn': True}):
-            results.append(f"is_cross {all_results.get('IsCross', 'None')}")
-        if self.collections['odd_event_alert'].find_one({'IsOn': True}):
-            odd_events = "oddEvents: " + " ".join(
-                [f"date:{event['date']},description:{event['description']}" for event in all_results.get('OddEvent', [])]
-            )
-            results.append(odd_events)
-        return allert_server_pb2.GetOnResultsResponse(results=results)
+        if self.collections['AccidentAlert'].find_one({'IsOn': True}):
+            accident=all_results.get('Accident', 'None')
+            if accident:
+                response.accident=accident
+            else:
+                response.accident_empty=True
+        if self.collections['CountAlert'].find_one({'IsOn': True}):
+            count=all_results.get('Count', 'None')
+            if count:
+                response.count=count
+            else:
+                response.count_is_empty=True
+        if self.collections['SendImageAlert'].find_one({'IsOn': True}):
+            image=all_results.get('Image', 'None')
+            if image:
+                response.image=image
+            else:
+                response.image_empty=True
+        if self.collections['IsEmptyAlert'].find_one({'IsOn': True}):
+            is_empty=all_results.get('IsEmpty', 'None')
+            if is_empty:
+                response.is_empty=is_empty
+            else:
+                response.is_empty_empty=True
+        if self.collections['IsCrossAlert'].find_one({'IsOn': True}):
+            is_cross=all_results.get('IsCross', 'None')
+            if is_cross:
+                response.is_cross=is_cross
+            else:
+                response.is_cross_empty=True
+        if self.collections['OddEventAlert'].find_one({'IsOn': True}):
+            odd_event=all_results.get('OddEvent', 'None')
+            if odd_event:
+                events=[Event(date=event['date'],description=event['description']) for event in odd_event]
+                for event in events:
+                    response.odd_event.append(event)
+            
+        return response
     
     def NewDay(self, request, context):
         for alert_type in ['AccidentAlert', 'OddEventAlert', 'IsCrossAlert', 'CountAlert', 'IsEmptyAlert', 'SendImageAlert']:
