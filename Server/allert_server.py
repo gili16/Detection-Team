@@ -116,7 +116,11 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
     def SetIsEmptyResult(self, request, context):
         self.toggle_result('IsEmpty', request.is_empty)
         return allert_server_pb2.SetIsEmptyResultResponse(message="IsEmpty set")
-
+    
+    def SetOverallImageResult(self, request, context):
+        self.toggle_result('OverallImage', request.image)
+        return allert_server_pb2.SetOverallImageResultResponse(message="OverallImage set")
+    
     def SetOddEventResult(self, request, context):
         new_event = {'date': request.odd_event.date, 'description': request.odd_event.description}
         odd_events = self.collections['Results'].find_one({})['OddEvent']
@@ -155,32 +159,38 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
 
     def GetOddEventResult(self, request, context):
         odd_event = self._get_result('OddEvent')
-        return allert_server_pb2.GetOddEventResultResponse(odd_event=odd_event)
+        return allert_server_pb2.GetOddEventResultResponse(odd_event=odd_event[:5])
 
     def GetSendImageResult(self, request, context):
         image = self._get_result('Image')
         return allert_server_pb2.GetSendImageResultResponse(image=image)
+    def GetOverallImageResult(self, request, context):
+        image = self._get_result('OverAllImage')
+        return allert_server_pb2.GetOverallImageResultResponse(image=image)
     # Decoding base64 string back to image bytes
     def decode_image(encoded_str):
         return base64.b64decode(encoded_str)
     # Handle multiple results
     def GetOnResults(self, request, context):
         # Create a response object
+        need_overall_image=False
         response = allert_server_pb2.GetOnResultsResponse()
         all_results = self._get_result('')
         if self.collections['AccidentAlert'].find_one({'IsOn': True}):
+            need_overall_image=True
             accident=all_results.get('Accident', 'None')
             if accident:
                 response.accident=accident
             else:
                 response.accident_empty=True
         if self.collections['CountAlert'].find_one({'IsOn': True}):
+            need_overall_image=True
             count=all_results.get('Count', 'None')
             if count:
                 response.count=count
             else:
                 response.count_is_empty=True
-        if self.collections['SendImageAlert'].find_one({'IsOn': True}):
+        if self.collections['SendImageAlert'].find_one({'IsOn': True}) :
             image=all_results.get('Image', 'None')
             if image:
                 response.image=image
@@ -193,18 +203,24 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
             else:
                 response.is_empty_empty=True
         if self.collections['IsCrossAlert'].find_one({'IsOn': True}):
+            need_overall_image=True
             is_cross=all_results.get('IsCross', 'None')
             if is_cross:
                 response.is_cross=is_cross
             else:
                 response.is_cross_empty=True
         if self.collections['OddEventAlert'].find_one({'IsOn': True}):
+            need_overall_image=True
             odd_event=all_results.get('OddEvent', 'None')
             if odd_event:
                 events=[Event(date=event['date'],description=event['description']) for event in odd_event]
-                for event in events:
+                for event in events[:5]:
                     response.odd_event.append(event)
-            
+        if need_overall_image:
+            overall_image=all_results.get('OverallImage','None')
+            response.overall_image=overall_image
+        else:
+            response.overall_image_empty=True
         return response
     
     def NewDay(self, request, context):
@@ -223,7 +239,8 @@ class AlertService(allert_server_pb2_grpc.AlertServiceServicer):
                 'IsEmpty': True,
                 'IsCross': False,
                 'Image': b'',
-                'OddEvent': []
+                'OddEvent': [],
+                'OverallImage': b''
             }},
             upsert=True
         )

@@ -1,142 +1,116 @@
+
 import sys
 import os
-import grpc
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import time
-from Server import allert_server_pb2, allert_server_pb2_grpc
-import warnings
-import cv2
-import os
-import torch
-import numpy as np
-from datetime import datetime
-
-warnings.filterwarnings("ignore", category=FutureWarning)
-
-# Load the YOLOv5 model for object detection
-model = torch.hub.load('ultralytics/yolov5', 'yolov5m', force_reload=True)
-
-def calculate_color_histogram(image):
-    hist = cv2.calcHist([image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
-    cv2.normalize(hist, hist)
-    return hist.flatten()
-
-def is_same_object(new_hist, existing_hists, new_bbox, existing_bboxes, color_threshold=0.5, distance_threshold=50):
-    for existing_hist, existing_bbox in zip(existing_hists, existing_bboxes):
-        if cv2.compareHist(new_hist, existing_hist, cv2.HISTCMP_CORREL) > color_threshold:
-            new_center = get_center(new_bbox)
-            existing_center = get_center(existing_bbox)
-            if np.linalg.norm(np.array(new_center) - np.array(existing_center)) < distance_threshold:
-                return True
-    return False
-
-def get_center(bbox):
-    return ((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2)
-
-def process_detections(cropped_frame, current_second, tracked_objects, current_id):
-    results = model(cropped_frame)
-    for box in results.xyxy[0]:
-        x1_box, y1_box, x2_box, y2_box, _, cls = box.tolist()
-        label = model.names[int(cls)]
-        if label in ["person", "car"]:
-            # Check if the entire object is within the bounding box
-            if is_object_fully_within_bbox((x1_box, y1_box, x2_box, y2_box)):
-                obj_image = cropped_frame[int(y1_box):int(y2_box), int(x1_box):int(x2_box)]
-                if obj_image.size > 0:
-                    new_hist = calculate_color_histogram(obj_image)
-                    new_bbox = (x1_box, y1_box, x2_box, y2_box)
-                    current_id = update_tracked_objects(new_hist, new_bbox, label, tracked_objects, current_second, current_id, obj_image)
-    return tracked_objects, current_id
-
-def is_object_fully_within_bbox(bbox):
-    # Implement logic to check if the bbox is fully within the specified area
-    return True  # Adjust this logic based on your needs
-
-def update_tracked_objects(new_hist, new_bbox, label, tracked_objects, current_second, current_id, obj_image):
-    matched = False
-    for obj_id, obj_info in tracked_objects.items():
-        if is_same_object(new_hist, obj_info['histograms'], new_bbox, obj_info['bboxes']):
-            obj_info['last_seen'] = current_second
-            obj_info['histograms'].append(new_hist)
-            obj_info['bboxes'].append(new_bbox)
-            matched = True
-            break
-    if not matched:
-        tracked_objects[current_id] = {
-            'label': label,
-            'histograms': [new_hist],
-            'bboxes': [new_bbox],
-            'last_seen': current_second
-        }
-        save_detected_object(obj_image, label, current_id, current_second)
-        current_id += 1
-    return current_id
-
-def save_detected_object(obj_image, label, current_id, current_second):
-    detected_objects_folder = f'results_tracking_in_area/{current_second}/detected_objects'
-    os.makedirs(detected_objects_folder, exist_ok=True)
-
-    object_image_path = os.path.join(detected_objects_folder, f"{label}_{current_id}.jpg")
-    cv2.putText(obj_image, label, (5, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-    cv2.imwrite(object_image_path, obj_image)
-
-def track_objects(frames_folder, bounding_box):
-    frame_rate = 30
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    results_folder = f'results_tracking_in_area/{timestamp}'
-    os.makedirs(results_folder, exist_ok=True)
-
-    tracked_objects = {}
-    current_id = 0
-    processed_frames=set()
-
-    while True:        
-        for frame_index, frame_name in enumerate(sorted(os.listdir(frames_folder))):
-            frame_path = os.path.join(frames_folder, frame_name)
-            if not frame_name.endswith('.jpg') and frame_name not in processed_frames:
-                continue
-            processed_frames.add(frame_name)
-            frame = cv2.imread(frame_path)
-            if frame is None:
-                continue
-
-            current_second = frame_index // frame_rate
-            x1, y1, x2, y2 = bounding_box
-            cropped_frame = frame[y1:y2, x1:x2]
-
-            tracked_objects, current_id = process_detections(cropped_frame, current_second, tracked_objects, current_id)
-
-            # Remove objects not seen in the last 30 seconds
-            tracked_objects = {k: v for k, v in tracked_objects.items() if current_second - v['last_seen'] < 30}
-
-            # Save a frame every 10 seconds with bounding boxes
-            if current_second % 4 == 0:
-                results=summarize_results(tracked_objects)
-                with open('Functions/output.txt', 'a') as file:
-                        # Write some text to the file
-                        file.write(f"{current_second} - {results}\n")
-                with grpc.insecure_channel('localhost:50051') as channel:
-                    stub = allert_server_pb2_grpc.AlertServiceStub(channel)
-                    response = stub.SetCountResult(allert_server_pb2.SetCountResultRequest(
-                        count=results['people']+results['cars']
-                    ))
-            time.sleep(1)
+from datetime import datetime, timedelta  # Import necessary modules
+# from Functions.object_tracking import (track_frames)
 
 
-def save_frame_with_bboxes(frame, bounding_box, tracked_objects, results_folder, current_second):
-    cv2.rectangle(frame, (bounding_box[0], bounding_box[1]), (bounding_box[2], bounding_box[3]), (0, 255, 0), 2)
-    for obj_id, obj_info in tracked_objects.items():
-        if obj_info['bboxes']: 
-            color = (0, 0, 255)  # Red color for tracked objects
-            bbox = obj_info['bboxes'][-1]
-            cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
-            cv2.putText(frame, f"{obj_info['label']}", (int(bbox[0]), int(bbox[1] - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+def is_bbox_overlapping(bounding_box, bbox_obj):
+    """
+    Check if the bounding box of an object overlaps with the specified bounding box.
 
-    result_frame_path = os.path.join(results_folder, f"result_{current_second:02d}.jpg")
-    cv2.imwrite(result_frame_path, frame)
+    Parameters:
+    - bounding_box: Tuple containing (x_min, y_min, width, height) for the outer bounding box.
+    - bbox_obj: Tuple containing (x_min, y_min, width, height) for the inner bounding box.
 
-def summarize_results(tracked_objects):
-    total_people = len([v for v in tracked_objects.values() if v['label'] == "person"])
-    total_cars = len([v for v in tracked_objects.values() if v['label'] == "car"])
-    return {"people": total_people, "cars": total_cars}
+    Returns:
+    - True if there is an overlap, False otherwise.
+    """
+    x_min, y_min, w, h = bounding_box #10 10 100 100
+    x_max = x_min + w # 110
+    y_max = y_min + h #110
+    
+    obj_x_min, obj_y_min, obj_w, obj_h = bbox_obj #110 110 50 50
+    obj_x_max = obj_x_min + obj_w #160
+    obj_y_max = obj_y_min + obj_h #160
 
+    # Check for any overlap
+    return not (obj_x_max <= x_min or obj_x_min >= x_max or 
+                obj_y_max <=y_min or obj_y_min >= y_max)
+
+def in_last_seconds(timestamp, last_seconds):
+    """
+    Check if the given timestamp is within the last specified seconds.
+
+    Parameters:
+    - timestamp: The datetime of the object.
+    - last_seconds: The threshold datetime to compare against.
+
+    Returns:
+    - True if the timestamp is more recent than last_seconds, False otherwise.
+    """
+    # cutoff_time = datetime.now() - timedelta(seconds=last_seconds)
+    return True
+
+
+def count_cars_and_people(tracked_objects, last_seconds, bounding_box):
+    """
+    Count distinct cars and people that are in the specified bounding box within the last seconds.
+
+    Parameters:
+    - tracked_objects: List of tracked objects with bounding boxes and timestamps.
+    - last_seconds: The cutoff time to consider for counting objects.
+    - bounding_box: The bounding box to check against.
+
+    Returns:
+    - A dictionary with counts of distinct 'car' and 'person' detected.
+    """
+    objects_detected = {"car": [], "person": []}
+    for obj in tracked_objects:
+        id_object = obj["Object"]
+        cls = obj["Label"]
+        bounding_boxes = obj["Bounding Boxes"]
+        
+        for bbox_info in bounding_boxes:  # Iterate through bounding boxes
+            bbox_obj = bbox_info["bbox"]  # Get the bbox
+            timestamp = bbox_info["datetime"]  # Get the timestamp directly
+            
+            # Ensure timestamp is a datetime object (optional check)
+            if isinstance(timestamp, str):
+                timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")  # Convert if it's a string
+            
+            if in_last_seconds(timestamp, last_seconds):
+                if is_bbox_overlapping(bounding_box, bbox_obj):
+                    objects_detected[cls].append(id_object)
+                    break
+            else:
+                break
+    return objects_detected  # Return the detected objects
+
+# def count_in_area(frames_folder, bounding_box, seconds=10):
+#     """
+#     Count the number of distinct cars and people in a specified area over the last 'seconds'.
+
+#     Parameters:
+#     - frames_folder: Path to the folder containing video frames.
+#     - bounding_box: The bounding box area to analyze.
+#     - seconds: The number of seconds to look back for counting (default is 30 seconds).
+
+#     Returns:
+#     - A dictionary with counts of 'people' and 'cars'.
+#     """
+#     # Track frames and get start and end times
+#     tracked_objects, start, end = track_frames(frames_folder)
+
+#     # Convert 'end' to datetime if it is a string
+#     if isinstance(end, str):
+#         end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
+
+#     # Calculate the time for the last specified seconds
+#     last_seconds = end - timedelta(seconds=seconds)  # Use 'end' as a datetime object now
+
+#     # Count detected cars and people
+#     objects_detected = count_cars_and_people(tracked_objects, last_seconds, bounding_box)
+    
+#     # Prepare the result dictionary
+#     result = {'people': len(objects_detected["person"]), 'cars': len(objects_detected["car"])}
+#     return result
+# if __name__ == "__main__":
+#     frames_folder = 'video/M0202'  # Path to the video frames
+#     bounding_box = (20, 20, 400, 400)  # Define the bounding box area
+#     results = count_in_area(frames_folder, bounding_box, 50)  # Count objects in the area
+    
+#     # Print the total number of detected people and cars
+#     print(f"Total - People: {results['people']}, Cars: {results['cars']}")

@@ -32,7 +32,7 @@ def read_images_from_directory(directory_path):
 
     # List of image file extensions to look for
     image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
-
+    i=1
     for filename in os.listdir(directory_path):
         if is_image_file(filename):
             # Create the full file path
@@ -41,8 +41,9 @@ def read_images_from_directory(directory_path):
             image = cv2.imread(file_path)
             if image is not None:
                 # Put only the image in the queue
-                image_queue.put(image)
+                image_queue.put((image,i))
                 print(f"Added image to queue: {filename}")
+            i+=1
 
     return image_queue
 

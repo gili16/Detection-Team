@@ -2,6 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 import warnings
+
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -167,6 +168,16 @@ class AlertServiceStub(object):
                 request_serializer=allert__server__pb2.NewDayRequest.SerializeToString,
                 response_deserializer=allert__server__pb2.NewDayResponse.FromString,
                 _registered_method=True)
+        self.SetOverallImageResult = channel.unary_unary(
+                '/alerts.AlertService/SetOverallImageResult',
+                request_serializer=allert__server__pb2.SetOverallImageResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.SetOverallImageResultResponse.FromString,
+                _registered_method=True)
+        self.GetOverAllImageResult = channel.unary_unary(
+                '/alerts.AlertService/GetOverAllImageResult',
+                request_serializer=allert__server__pb2.GetOverallImageResultRequest.SerializeToString,
+                response_deserializer=allert__server__pb2.GetOverallImageResultResponse.FromString,
+                _registered_method=True)
 
 
 class AlertServiceServicer(object):
@@ -328,6 +339,18 @@ class AlertServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SetOverallImageResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetOverAllImageResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AlertServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -460,6 +483,16 @@ def add_AlertServiceServicer_to_server(servicer, server):
                     servicer.NewDay,
                     request_deserializer=allert__server__pb2.NewDayRequest.FromString,
                     response_serializer=allert__server__pb2.NewDayResponse.SerializeToString,
+            ),
+            'SetOverallImageResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetOverallImageResult,
+                    request_deserializer=allert__server__pb2.SetOverallImageResultRequest.FromString,
+                    response_serializer=allert__server__pb2.SetOverallImageResultResponse.SerializeToString,
+            ),
+            'GetOverAllImageResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOverAllImageResult,
+                    request_deserializer=allert__server__pb2.GetOverallImageResultRequest.FromString,
+                    response_serializer=allert__server__pb2.GetOverallImageResultResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -1164,6 +1197,60 @@ class AlertService(object):
             '/alerts.AlertService/NewDay',
             allert__server__pb2.NewDayRequest.SerializeToString,
             allert__server__pb2.NewDayResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetOverallImageResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/SetOverallImageResult',
+            allert__server__pb2.SetOverallImageResultRequest.SerializeToString,
+            allert__server__pb2.SetOverallImageResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetOverAllImageResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/alerts.AlertService/GetOverAllImageResult',
+            allert__server__pb2.GetOverallImageResultRequest.SerializeToString,
+            allert__server__pb2.GetOverallImageResultResponse.FromString,
             options,
             channel_credentials,
             insecure,

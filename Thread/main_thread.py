@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Server import allert_server_pb2, allert_server_pb2_grpc
 import grpc
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Functions.detect_unusual_events import delete_images_from_directory
+from Functions.detect_cross import delete_images_from_directory
 def run_process():
     subprocess.run(['python', 'Thread/secondary_thread.py'])  # Specify the script path
 

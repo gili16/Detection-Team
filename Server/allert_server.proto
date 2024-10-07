@@ -29,6 +29,8 @@ service AlertService {
     rpc GetIsCrossResult(GetIsCrossResultRequest) returns (GetIsCrossResultResponse);
     rpc GetOnResults(GetOnResultsRequest) returns (GetOnResultsResponse);
     rpc NewDay(NewDayRequest) returns (NewDayResponse);
+    rpc SetOverallImageResult (SetOverallImageResultRequest) returns (SetOverallImageResultResponse);
+    rpc GetOverAllImageResult (GetOverallImageResultRequest) returns (GetOverallImageResultResponse);
 }
 
 message CountAlertRequest {
@@ -121,6 +123,12 @@ message SetOddEventResultResponse{
 message SetIsEmptyResultResponse{
     string message=1;
 }
+message SetOverallImageResultRequest{
+    bytes image=1;
+}
+message SetOverallImageResultResponse{
+    string message=1;
+}
 message GetCountResultRequest{
     
 }
@@ -151,6 +159,12 @@ message GetOddEventResultResponse{
 }
 message GetIsEmptyResultResponse{
     bool is_empty=1;
+}
+message GetOverallImageResultRequest{
+
+}
+message GetOverallImageResultResponse{
+    bytes image=1;
 }
 message GetOnResultsRequest{
     
@@ -185,6 +199,10 @@ message GetOnResultsResponse {
     oneof accident_oneof {
         bool accident = 6;         // Indicates an accident
         bool accident_empty = 16;  // Indicates that accident is absent
+    }
+    oneof overall_image_oneof{
+        bytes overall_image=7;
+        bool overall_image_empty=17;
     }
 }
 

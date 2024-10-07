@@ -105,7 +105,7 @@ def annotate_frame(image, bbox, label, color=(0, 0, 255)):
     # Put the label text above the rectangle
     cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
 
-def process_frame(image, coord1, coord2, output_path, filename):
+def process_frame(image, coord1, coord2, ):
     """
     Process a frame to:
     - Draw a line
@@ -130,10 +130,10 @@ def process_frame(image, coord1, coord2, output_path, filename):
             annotate_frame(image_with_line, bbox, obj['label'], color=(0, 0, 255))
     
     # If an object is on the line segment, save the frame
-    if object_on_line:
-        output_frame_path = os.path.join(output_path, filename)
-        cv2.imwrite(output_frame_path, image_with_line)
-        print(f"Object found on the line in frame {filename}. Saved with annotation.")
+    # if object_on_line:
+    #     output_frame_path = os.path.join(output_path, filename)
+    #     cv2.imwrite(output_frame_path, image_with_line)
+    #     print(f"Object found on the line in frame {filename}. Saved with annotation.")
     return object_on_line
 
 def process_all_frames_cross(folder_path, coord1, coord2, output_folder):
