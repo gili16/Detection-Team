@@ -19,13 +19,14 @@ if __name__ == "__main__":
     try:
         thread2 = threading.Thread(target=run_server)
         thread2.start()
-        thread = threading.Thread(target=run_process)
-        thread.start()
         with grpc.insecure_channel('localhost:50051') as channel:
             stub = allert_server_pb2_grpc.AlertServiceStub(channel)
             response = stub.NewDay(allert_server_pb2.NewDayRequest(
                 
             ))
+        thread = threading.Thread(target=run_process)
+        thread.start()
+       
         
         thread.join()  # Wait for the thread to finish
         
